@@ -1,4 +1,5 @@
 import 'package:albert/features/utils/utils.dart';
+import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
+        scaffoldBackgroundColor: AppColors.background,
       ),
       routerConfig: router,
     );
