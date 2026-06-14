@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _ProfilePageState extends State<ProfilePage> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
@@ -15,14 +15,14 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return const SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(padding: EdgeInsets.only(top: 24)),
-            Text("Home Page"),
+            Text("Profile Page"),
           ],
         ),
       ),
