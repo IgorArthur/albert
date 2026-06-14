@@ -1,5 +1,7 @@
 import 'package:albert/features/navigation_bar/data/destinations_model.dart';
 import 'package:albert/features/navigation_bar/presentation/widgets/getx/navigation_bar_controller.dart';
+import 'package:albert/features/utils/colors/app_colors.dart';
+import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -36,10 +38,10 @@ class CustomNavigationBar extends StatelessWidget {
       builder: (controller) {
         return Container(
           decoration: const BoxDecoration(
-            color: Color(0xFF0D0C0C),
+            color: AppColors.neutral0,
             border: Border(
               top: BorderSide(
-                color: Color(0xFF1E1E1E),
+                color: AppColors.neutral30,
                 width: 0.5,
               ),
             ),
@@ -70,32 +72,22 @@ class CustomNavigationBar extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? const Color(0x22FF5E3A) // Premium orange with low opacity
-                              : Colors.transparent,
+                              ? AppColors.primary100.withValues(alpha: 0.13)
+                              : AppColors.transparent,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Icon(
                           destination.icon,
                           color: isSelected
-                              ? const Color(0xFFFF5E3A) // Premium active orange/coral
-                              : const Color(0xFF8E8E8E), // Premium inactive grey
+                              ? AppColors.primary100
+                              : AppColors.neutral60,
                           size: 24,
                         ),
                       ),
                       const SizedBox(height: 6),
-                      Text(
-                        destination.label,
-                        style: TextStyle(
-                          color: isSelected
-                              ? Colors.white
-                              : const Color(0xFF8E8E8E),
-                          fontWeight: isSelected
-                              ? FontWeight.bold
-                              : FontWeight.w500,
-                          fontSize: 11,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
+                      isSelected
+                          ? Text(destination.label).captionBold(color: AppColors.neutral100)
+                          : Text(destination.label).caption(color: AppColors.neutral60),
                     ],
                   ),
                 ),
