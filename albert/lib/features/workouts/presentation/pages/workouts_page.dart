@@ -1,6 +1,6 @@
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
-import 'package:albert/features/workouts/models/workout.dart';
+import 'package:albert/features/workouts/data/hive/routine.dart';
 import 'package:albert/features/workouts/presentation/getx/workouts_controller.dart';
 import 'package:albert/features/workouts/presentation/pages/add_workout_sheet.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +15,7 @@ class WorkoutsPage extends StatefulWidget {
 
 class _WorkoutsPageState extends State<WorkoutsPage> {
   void _showAddWorkoutSheet() {
+    WorkoutsController.to.resetNewRoutineDraft();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -23,7 +24,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
     );
   }
 
-  void _confirmDelete(WorkoutRoutine routine) {
+  void _confirmDelete(Routine routine) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -56,7 +57,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
     );
   }
 
-  Widget _buildWorkoutCard(WorkoutRoutine routine) {
+  Widget _buildWorkoutCard(Routine routine) {
     final exercisesText = routine.exercises.map((e) => e.name).join(' · ');
 
     return Container(
@@ -133,13 +134,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
             color: Colors.transparent,
             child: InkWell(
               onTap: () {
-                Get.snackbar(
-                  'Workout Session',
-                  'Started "${routine.name}" session!',
-                  backgroundColor: AppColors.primary100.withValues(alpha: 0.9),
-                  colorText: Colors.white,
-                  snackPosition: SnackPosition.BOTTOM,
-                );
+                WorkoutsController.to.startWorkoutSession(routine);
               },
               borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(20),

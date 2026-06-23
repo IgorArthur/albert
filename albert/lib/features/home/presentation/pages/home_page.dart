@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 16),
                   // Horizontally scrollable list of routines
                   SizedBox(
-                    height: 140,
+                    height: 160,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       physics: const BouncingScrollPhysics(),

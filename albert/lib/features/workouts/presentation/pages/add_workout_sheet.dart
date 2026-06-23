@@ -1,99 +1,12 @@
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
-import 'package:albert/features/workouts/models/workout.dart';
+import 'package:albert/features/workouts/data/hive/exercise.dart';
 import 'package:albert/features/workouts/presentation/getx/workouts_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class AddWorkoutSheet extends StatefulWidget {
+class AddWorkoutSheet extends StatelessWidget {
   const AddWorkoutSheet({super.key});
-
-  @override
-  State<AddWorkoutSheet> createState() => _AddWorkoutSheetState();
-}
-
-class _AddWorkoutSheetState extends State<AddWorkoutSheet> {
-  final _nameController = TextEditingController();
-  String _selectedIcon = '🔥';
-  final List<ExerciseModel> _exercises = [
-    ExerciseModel(name: ''),
-  ];
-
-  final List<String> _icons = ['🔥', '⚡', '🦵', '💪', '🏋️', '🥊', '🏃', '🧘'];
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
-
-  void _saveRoutine() {
-    final name = _nameController.text.trim();
-    if (name.isEmpty) {
-      Get.snackbar(
-        'Validation Error',
-        'Please enter a routine name.',
-        backgroundColor: AppColors.error100,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
-
-    if (_exercises.isEmpty) {
-      Get.snackbar(
-        'Validation Error',
-        'Please add at least one exercise.',
-        backgroundColor: AppColors.error100,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
-
-    for (var i = 0; i < _exercises.length; i++) {
-      if (_exercises[i].name.trim().isEmpty) {
-        Get.snackbar(
-          'Validation Error',
-          'Please enter a name for Exercise ${i + 1}.',
-          backgroundColor: AppColors.error100,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-        );
-        return;
-      }
-      if (_exercises[i].sets <= 0) {
-        Get.snackbar(
-          'Validation Error',
-          'Sets for "${_exercises[i].name}" must be greater than 0.',
-          backgroundColor: AppColors.error100,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-        );
-        return;
-      }
-      if (_exercises[i].reps <= 0) {
-        Get.snackbar(
-          'Validation Error',
-          'Reps for "${_exercises[i].name}" must be greater than 0.',
-          backgroundColor: AppColors.error100,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-        );
-        return;
-      }
-    }
-
-    final newRoutine = WorkoutRoutine(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: name,
-      icon: _selectedIcon,
-      exercises: _exercises,
-    );
-
-    WorkoutsController.to.addRoutine(newRoutine);
-    Get.back();
-  }
 
   Widget _buildNumberInput({
     required String label,
@@ -133,8 +46,9 @@ class _AddWorkoutSheetState extends State<AddWorkoutSheet> {
     );
   }
 
-  Widget _buildExerciseCard(int index, ExerciseModel exercise) {
+  Widget _buildExerciseCard(int index, Exercise exercise, WorkoutsController controller) {
     return Container(
+      key: ValueKey(exercise.hashCode),
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -169,15 +83,12 @@ class _AddWorkoutSheetState extends State<AddWorkoutSheet> {
                   },
                 ),
               ),
-              if (_exercises.length > 1)
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, color: AppColors.error100),
-                  onPressed: () {
-                    setState(() {
-                      _exercises.removeAt(index);
-                    });
-                  },
-                ),
+              Obx(() => controller.newRoutineExercises.length > 1
+                  ? IconButton(
+                      icon: const Icon(Icons.delete_outline, color: AppColors.error100),
+                      onPressed: () => controller.removeExerciseFromDraft(index),
+                    )
+                  : const SizedBox.shrink()),
             ],
           ),
           const Divider(color: AppColors.neutral30, height: 16, thickness: 0.5),
@@ -202,11 +113,11 @@ class _AddWorkoutSheetState extends State<AddWorkoutSheet> {
               const SizedBox(width: 12),
               _buildNumberInput(
                 label: 'KG',
-                initialValue: exercise.weight % 1 == 0
-                    ? exercise.weight.toInt().toString()
-                    : exercise.weight.toString(),
+                initialValue: exercise.kg % 1 == 0
+                    ? exercise.kg.toInt().toString()
+                    : exercise.kg.toString(),
                 onChanged: (val) {
-                  exercise.weight = double.tryParse(val) ?? 0;
+                  exercise.kg = double.tryParse(val) ?? 0;
                 },
               ),
             ],
@@ -216,45 +127,45 @@ class _AddWorkoutSheetState extends State<AddWorkoutSheet> {
     );
   }
 
-  Widget _buildIconSelector() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Row(
-        children: _icons.map((icon) {
-          final isSelected = _selectedIcon == icon;
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedIcon = icon;
-              });
-            },
-            child: Container(
-              margin: const EdgeInsets.only(right: 12),
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.primary100 : AppColors.surfaceLight,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected ? Colors.transparent : AppColors.neutral30,
-                  width: 1,
+  Widget _buildIconSelector(WorkoutsController controller) {
+    return Obx(() {
+      final selectedIcon = controller.newRoutineIcon.value;
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        child: Row(
+          children: controller.draftIcons.map((icon) {
+            final isSelected = selectedIcon == icon;
+            return GestureDetector(
+              onTap: () => controller.selectIconForDraft(icon),
+              child: Container(
+                margin: const EdgeInsets.only(right: 12),
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.primary100 : AppColors.surfaceLight,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isSelected ? Colors.transparent : AppColors.neutral30,
+                    width: 1,
+                  ),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  icon,
+                  style: const TextStyle(fontSize: 20),
                 ),
               ),
-              alignment: Alignment.center,
-              child: Text(
-                icon,
-                style: const TextStyle(fontSize: 20),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
+            );
+          }).toList(),
+        ),
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final controller = WorkoutsController.to;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Container(
@@ -283,7 +194,7 @@ class _AddWorkoutSheetState extends State<AddWorkoutSheet> {
                     fontSize: 22,
                   )),
               GestureDetector(
-                onTap: () => Get.back(),
+                onTap: () => Navigator.of(context).pop(),
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: const BoxDecoration(
@@ -318,7 +229,7 @@ class _AddWorkoutSheetState extends State<AddWorkoutSheet> {
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     child: TextField(
-                      controller: _nameController,
+                      controller: controller.newRoutineNameController,
                       style: const TextStyle(color: Colors.white, fontSize: 16),
                       decoration: const InputDecoration(
                         hintText: 'e.g. Upper body burner',
@@ -331,7 +242,7 @@ class _AddWorkoutSheetState extends State<AddWorkoutSheet> {
                   // ICON Section
                   const Text('ICON').overline(color: AppColors.neutral60),
                   const SizedBox(height: 8),
-                  _buildIconSelector(),
+                  _buildIconSelector(controller),
                   const SizedBox(height: 24),
                   // EXERCISES Header Section
                   Row(
@@ -339,11 +250,7 @@ class _AddWorkoutSheetState extends State<AddWorkoutSheet> {
                     children: [
                       const Text('EXERCISES').overline(color: AppColors.neutral60),
                       GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _exercises.add(ExerciseModel(name: ''));
-                          });
-                        },
+                        onTap: () => controller.addExerciseToDraft(),
                         child: Row(
                           children: [
                             const Icon(Icons.add, color: AppColors.primary100, size: 16),
@@ -356,8 +263,13 @@ class _AddWorkoutSheetState extends State<AddWorkoutSheet> {
                   ),
                   const SizedBox(height: 12),
                   // Exercises Cards list
-                  ...List.generate(_exercises.length, (index) {
-                    return _buildExerciseCard(index, _exercises[index]);
+                  Obx(() {
+                    final exercises = controller.newRoutineExercises;
+                    return Column(
+                      children: List.generate(exercises.length, (index) {
+                        return _buildExerciseCard(index, exercises[index], controller);
+                      }),
+                    );
                   }),
                 ],
               ),
@@ -366,7 +278,7 @@ class _AddWorkoutSheetState extends State<AddWorkoutSheet> {
           const SizedBox(height: 16),
           // Save routine Button
           ElevatedButton(
-            onPressed: _saveRoutine,
+            onPressed: () => controller.saveRoutine(),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF8F4221), // Rust orange button
               foregroundColor: Colors.white,
