@@ -1,42 +1,27 @@
+import 'package:albert/features/home/presentation/getx/home_controller.dart';
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
 
-class QuickActionCard extends StatelessWidget {
-  const QuickActionCard({
-    required this.icon,
-    required this.iconColor,
-    required this.tag,
-    required this.tagColor,
-    required this.title,
-    required this.titleColor,
-    this.gradient,
-    this.backgroundColor,
-    this.onTap,
-    super.key,
-  });
-
-  final IconData icon;
-  final Color iconColor;
-  final String tag;
-  final Color tagColor;
-  final String title;
-  final Color titleColor;
-  final Gradient? gradient;
-  final Color? backgroundColor;
-  final VoidCallback? onTap;
+class StartWorkoutCard extends StatelessWidget {
+  const StartWorkoutCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = HomeController.to;
+
     return Expanded(
       child: GestureDetector(
-        onTap: onTap,
+        onTap: controller.startNextWorkout,
         child: Container(
           height: 150,
           padding: const EdgeInsets.all(20.0),
           decoration: BoxDecoration(
-            color: gradient == null ? (backgroundColor ?? AppColors.surfaceCard) : null,
-            gradient: gradient,
+            gradient: const LinearGradient(
+              colors: [AppColors.primaryGradientStart, AppColors.primary100],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
             borderRadius: BorderRadius.circular(28),
           ),
           child: Column(
@@ -44,22 +29,22 @@ class QuickActionCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Icon(
-                icon,
-                color: iconColor,
+                Icons.fitness_center_rounded,
+                color: Colors.black.withValues(alpha: 0.7),
                 size: 28,
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(tag).overline(color: tagColor),
+                  Text("START NOW").overline(color: Colors.black.withValues(alpha: 0.6)),
                   const SizedBox(height: 4),
                   Text(
-                    title,
-                    style: TextStyle(
+                    "🔥 ${controller.nextWorkoutName}",
+                    style: const TextStyle(
                       fontFamily: 'Montserrat',
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: titleColor,
+                      color: Colors.black,
                     ),
                   ),
                 ],

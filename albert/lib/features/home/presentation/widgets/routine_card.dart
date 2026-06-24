@@ -1,28 +1,21 @@
+import 'package:albert/features/home/presentation/getx/home_controller.dart';
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
+import 'package:albert/features/workouts/data/hive/routine.dart';
 import 'package:flutter/material.dart';
 
 class RoutineCard extends StatelessWidget {
-  const RoutineCard({
-    required this.name,
-    required this.exercisesCount,
-    required this.icon,
-    this.onTap,
-    super.key,
-  });
+  const RoutineCard({super.key, required this.routine});
 
-  final String name;
-  final int exercisesCount;
-  final String icon;
-  final VoidCallback? onTap;
+  final Routine routine;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () => HomeController.to.onRoutineTap(routine),
       child: Container(
         width: 140,
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         decoration: BoxDecoration(
           color: AppColors.surfaceCard,
           borderRadius: BorderRadius.circular(24),
@@ -30,15 +23,15 @@ class RoutineCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Icon / Emoji
             Text(
-              icon,
+              routine.icon,
               style: const TextStyle(fontSize: 28),
             ),
             const Spacer(),
-            // Title
             Text(
-              name,
+              routine.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontFamily: 'Montserrat',
                 fontSize: 16,
@@ -47,8 +40,7 @@ class RoutineCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            // Subtitle
-            Text("$exercisesCount exercises").caption(color: AppColors.neutral60),
+            Text("${routine.exercises.length} exercises").caption(color: AppColors.neutral60),
           ],
         ),
       ),
