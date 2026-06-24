@@ -1,4 +1,9 @@
+import 'package:albert/features/utils/go_router/files/routes.dart';
+import 'package:albert/features/workouts/data/hive/routine.dart';
+import 'package:albert/features/workouts/presentation/getx/workouts_controller.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeController extends GetxController {
   static HomeController get to => Get.find();
@@ -11,13 +16,14 @@ class HomeController extends GetxController {
   final int streakDays = 0;
   final int sessionsLogged = 0;
 
-  final String nextWorkoutName = "Push Day";
+  // ─── Getters ──────────────────────────────────────────────────────────────
 
-  final List<RoutineModel> routines = const [
-    RoutineModel(name: "Push Day", exercisesCount: 4, icon: "🔥"),
-    RoutineModel(name: "Pull Day", exercisesCount: 4, icon: "⚡"),
-    RoutineModel(name: "Leg Day", exercisesCount: 4, icon: "🍗"),
-  ];
+  String get nextWorkoutName =>
+      WorkoutsController.to.routines.isNotEmpty
+          ? WorkoutsController.to.routines.first.name
+          : 'No routine';
+
+  RxList<Routine> get routines => WorkoutsController.to.routines;
 
   // ─── Actions ──────────────────────────────────────────────────────────────
 
@@ -29,23 +35,11 @@ class HomeController extends GetxController {
     // TODO: navigate to Coach Albert chat
   }
 
-  void onRoutineTap(RoutineModel routine) {
+  void onRoutineTap(Routine routine) {
     // TODO: navigate to routine detail
   }
 
-  void seeAllRoutines() {
-    // TODO: navigate to routines list
+  void seeAllRoutines(BuildContext context) {
+    context.go(Routes.workoutsPage);
   }
-}
-
-class RoutineModel {
-  final String name;
-  final int exercisesCount;
-  final String icon;
-
-  const RoutineModel({
-    required this.name,
-    required this.exercisesCount,
-    required this.icon,
-  });
 }

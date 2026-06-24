@@ -6,6 +6,7 @@ import 'package:albert/features/home/presentation/widgets/start_workout_card.dar
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -46,30 +47,40 @@ class HomePage extends StatelessWidget {
               ),
 
               const SizedBox(height: 32),
-              // Routines Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("Your routines").subtitle1(color: AppColors.neutral100),
-                  GestureDetector(
-                    onTap: controller.seeAllRoutines,
-                    child: Text("See all").captionBold(color: AppColors.primary100),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              // Horizontally scrollable routines
-              SizedBox(
-                height: 160,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: controller.routines.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 16),
-                  itemBuilder: (_, index) => RoutineCard(routine: controller.routines[index]),
-                ),
-              ),
-              const SizedBox(height: 16),
+              // Routines Section — reactive, hidden when empty
+              Obx(() {
+                final routines = controller.routines;
+
+                if (routines.isEmpty) return const SizedBox.shrink();
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Your routines").subtitle1(color: AppColors.neutral100),
+                        GestureDetector(
+                          onTap: () => controller.seeAllRoutines(context),
+                          child: Text("See all").captionBold(color: AppColors.primary100),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 160,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: routines.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 16),
+                        itemBuilder: (_, index) => RoutineCard(routine: routines[index]),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                );
+              }),
             ],
           ),
         ),
