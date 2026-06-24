@@ -1,26 +1,17 @@
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
+import 'package:albert/features/home/presentation/getx/home_controller.dart';
 import 'package:flutter/material.dart';
 
 class LevelCard extends StatelessWidget {
-  const LevelCard({
-    required this.level,
-    required this.currentXp,
-    required this.maxXp,
-    required this.streakDays,
-    required this.sessionsLogged,
-    super.key,
-  });
-
-  final int level;
-  final int currentXp;
-  final int maxXp;
-  final int streakDays;
-  final int sessionsLogged;
+  const LevelCard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final xpFraction = maxXp > 0 ? (currentXp / maxXp).clamp(0.0, 1.0) : 0.0;
+    final controller = HomeController.to;
+    final xpFraction = controller.maxXp > 0
+        ? (controller.currentXp / controller.maxXp).clamp(0.0, 1.0)
+        : 0.0;
 
     return Container(
       padding: const EdgeInsets.all(24.0),
@@ -41,9 +32,9 @@ class LevelCard extends StatelessWidget {
                 children: [
                   Text("LEVEL").overline(color: AppColors.neutral60),
                   const SizedBox(height: 4),
-                  Text("$level").display(color: AppColors.neutral100),
+                  Text("${controller.level}").display(color: AppColors.neutral100),
                   const SizedBox(height: 6),
-                  Text("$currentXp / $maxXp XP").caption(color: AppColors.neutral60),
+                  Text("${controller.currentXp} / ${controller.maxXp} XP").caption(color: AppColors.neutral60),
                 ],
               ),
               // Right Column: Streak Badge & Sessions
@@ -65,12 +56,12 @@ class LevelCard extends StatelessWidget {
                           size: 16,
                         ),
                         const SizedBox(width: 4),
-                        Text("$streakDays day streak").captionBold(color: AppColors.primary100),
+                        Text("${controller.streakDays} day streak").captionBold(color: AppColors.primary100),
                       ],
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text("$sessionsLogged sessions logged").caption(color: AppColors.neutral60),
+                  Text("${controller.sessionsLogged} sessions logged").caption(color: AppColors.neutral60),
                 ],
               ),
             ],
