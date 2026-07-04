@@ -1,3 +1,5 @@
+import 'package:albert/features/utils/colors/app_colors.dart';
+import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -29,6 +31,9 @@ class ProfileController extends GetxController {
 
   String get heightUnit => isMetric.value ? 'cm' : 'in';
   String get weightUnit => isMetric.value ? 'kg' : 'lb';
+  String get heightLabel => isMetric.value ? 'Height (cm)' : 'Height (in)';
+  String get weightLabel => isMetric.value ? 'Weight (kg)' : 'Weight (lb)';
+  String get weightUnitDisplay => isMetric.value ? 'KG' : 'LB';
 
   // ─── Notifications ────────────────────────────────────────────────────────
 
@@ -36,7 +41,22 @@ class ProfileController extends GetxController {
   final RxBool streakAlerts = true.obs;
   final RxBool albertTips = false.obs;
 
-  // ─── Gamification (read-only, from HomeController) ───────────────────────
+  // ─── Font Size ────────────────────────────────────────────────────────────
+
+  final Rx<TextSize> textSize = TextSize.normal.obs;
+
+  void setTextSize(TextSize size) {
+    textSize.value = size;
+    TextSizeManager.setSize(size);
+  }
+
+  // ─── Language ─────────────────────────────────────────────────────────────
+
+  final RxString language = 'en'.obs;
+
+  void setLanguage(String lang) => language.value = lang;
+
+  // ─── Gamification (read-only) ─────────────────────────────────────────────
 
   final int level = 1;
   final int currentXp = 0;
@@ -154,6 +174,8 @@ class ProfileController extends GetxController {
     workoutReminders.value = true;
     streakAlerts.value = true;
     albertTips.value = false;
+    setTextSize(TextSize.normal);
+    language.value = 'en';
     Get.snackbar(
       'Settings reset',
       'All settings have been restored to defaults.',

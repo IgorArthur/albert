@@ -1,5 +1,7 @@
 import 'package:albert/features/profile/presentation/getx/profile_controller.dart';
 import 'package:albert/features/profile/presentation/widgets/profile_avatar_picker.dart';
+import 'package:albert/features/profile/presentation/widgets/profile_font_size_picker.dart';
+import 'package:albert/features/profile/presentation/widgets/profile_language_selector.dart';
 import 'package:albert/features/profile/presentation/widgets/profile_notification_tile.dart';
 import 'package:albert/features/profile/presentation/widgets/profile_section_card.dart';
 import 'package:albert/features/profile/presentation/widgets/profile_summary_card.dart';
@@ -78,6 +80,12 @@ class ProfilePage extends StatelessWidget {
                       hint: 'you@example.com',
                       keyboardType: TextInputType.emailAddress,
                     ),
+                    const SizedBox(height: 16),
+                    _SecondaryButton(
+                      icon: Icons.save_outlined,
+                      label: 'Save email',
+                      onTap: c.saveEmail,
+                    ),
                     const SizedBox(height: 12),
                     Text(
                       'Albert v1 stores data locally on this device.',
@@ -91,14 +99,14 @@ class ProfilePage extends StatelessWidget {
               ProfileSectionCard(
                 icon: Icons.straighten_rounded,
                 title: 'BODY STATS',
-                child: Column(
+                child: Obx(() => Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Row(
                       children: [
                         Expanded(
                           child: ProfileTextField(
-                            label: 'Height (cm)',
+                            label: c.heightLabel,
                             controller: c.heightController,
                             hint: '180',
                             keyboardType: TextInputType.number,
@@ -107,7 +115,7 @@ class ProfilePage extends StatelessWidget {
                         const SizedBox(width: 16),
                         Expanded(
                           child: ProfileTextField(
-                            label: 'Weight (kg)',
+                            label: c.weightLabel,
                             controller: c.weightController,
                             hint: '75',
                             keyboardType: TextInputType.number,
@@ -122,7 +130,7 @@ class ProfilePage extends StatelessWidget {
                       onTap: c.saveBodyStats,
                     ),
                   ],
-                ),
+                )),
               ),
               const SizedBox(height: 16),
 
@@ -131,6 +139,22 @@ class ProfilePage extends StatelessWidget {
                 icon: Icons.balance_rounded,
                 title: 'UNITS',
                 child: ProfileUnitToggle(),
+              ),
+              const SizedBox(height: 16),
+
+              // ── Font Size ────────────────────────────────────────────────
+              const ProfileSectionCard(
+                icon: Icons.text_fields_rounded,
+                title: 'TEXT SIZE',
+                child: ProfileFontSizePicker(),
+              ),
+              const SizedBox(height: 16),
+
+              // ── Language ─────────────────────────────────────────────────
+              const ProfileSectionCard(
+                icon: Icons.language_rounded,
+                title: 'LANGUAGE',
+                child: ProfileLanguageSelector(),
               ),
               const SizedBox(height: 16),
 
@@ -145,6 +169,7 @@ class ProfilePage extends StatelessWidget {
                           subtitle: 'Nudge me on training days.',
                           value: c.workoutReminders.value,
                           onChanged: (v) => c.workoutReminders.value = v,
+                          enabled: false,
                         ),
                         const SizedBox(height: 16),
                         ProfileNotificationTile(
@@ -152,6 +177,7 @@ class ProfilePage extends StatelessWidget {
                           subtitle: "Don't let the streak die.",
                           value: c.streakAlerts.value,
                           onChanged: (v) => c.streakAlerts.value = v,
+                          enabled: false,
                         ),
                         const SizedBox(height: 16),
                         ProfileNotificationTile(
@@ -159,6 +185,7 @@ class ProfilePage extends StatelessWidget {
                           subtitle: 'Occasional coaching insights.',
                           value: c.albertTips.value,
                           onChanged: (v) => c.albertTips.value = v,
+                          enabled: false,
                         ),
                       ],
                     )),
@@ -175,7 +202,7 @@ class ProfilePage extends StatelessWidget {
                     _SecondaryButton(
                       icon: Icons.replay_rounded,
                       label: 'Reset settings',
-                      onTap: c.resetSettings,
+                      onTap: () => c.confirmReset(context),
                     ),
                     const SizedBox(height: 16),
                     Row(
