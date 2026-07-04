@@ -2,6 +2,7 @@ import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:albert/features/home/presentation/getx/home_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class LevelCard extends StatelessWidget {
   const LevelCard({super.key});
@@ -30,7 +31,7 @@ class LevelCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("LEVEL").overline(color: AppColors.neutral60),
+                  Text('home_level'.tr).overline(color: AppColors.neutral60),
                   const SizedBox(height: 4),
                   Text("${controller.level}").display(color: AppColors.neutral100),
                   const SizedBox(height: 6),
@@ -56,12 +57,12 @@ class LevelCard extends StatelessWidget {
                           size: 16,
                         ),
                         const SizedBox(width: 4),
-                        Text("${controller.streakDays} day streak").captionBold(color: AppColors.primary100),
+                        Text('home_day_streak'.trParams({'count': '${controller.streakDays}'})).captionBold(color: AppColors.primary100),
                       ],
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text("${controller.sessionsLogged} sessions logged").caption(color: AppColors.neutral60),
+                  Text('home_sessions_logged'.trParams({'count': '${controller.sessionsLogged}'})).caption(color: AppColors.neutral60),
                 ],
               ),
             ],

@@ -31,8 +31,10 @@ class ProfileController extends GetxController {
 
   String get heightUnit => isMetric.value ? 'cm' : 'in';
   String get weightUnit => isMetric.value ? 'kg' : 'lb';
-  String get heightLabel => isMetric.value ? 'Height (cm)' : 'Height (in)';
-  String get weightLabel => isMetric.value ? 'Weight (kg)' : 'Weight (lb)';
+  String get heightLabel =>
+      isMetric.value ? 'profile_height_cm'.tr : 'profile_height_in'.tr;
+  String get weightLabel =>
+      isMetric.value ? 'profile_weight_kg'.tr : 'profile_weight_lb'.tr;
   String get weightUnitDisplay => isMetric.value ? 'KG' : 'LB';
 
   // ─── Notifications ────────────────────────────────────────────────────────
@@ -54,7 +56,13 @@ class ProfileController extends GetxController {
 
   final RxString language = 'en'.obs;
 
-  void setLanguage(String lang) => language.value = lang;
+  Locale get currentLocale =>
+      language.value == 'pt' ? const Locale('pt', 'BR') : const Locale('en', 'US');
+
+  void setLanguage(String lang) {
+    language.value = lang;
+    Get.updateLocale(currentLocale);
+  }
 
   // ─── Gamification (read-only) ─────────────────────────────────────────────
 
@@ -64,11 +72,14 @@ class ProfileController extends GetxController {
   final int streakDays = 0;
 
   String get emailSubtitle =>
-      email.value.isEmpty ? 'No email set' : email.value;
+      email.value.isEmpty ? 'profile_no_email'.tr : email.value;
 
-  String get xpLabel => '$currentXp/$maxXp XP';
-  String get streakLabel => '${streakDays}d streak';
-  String get levelLabel => 'Lvl $level';
+  String get xpLabel =>
+      'profile_xp_label'.trParams({'xp': '$currentXp', 'max': '$maxXp'});
+  String get streakLabel =>
+      'profile_streak_label'.trParams({'days': '$streakDays'});
+  String get levelLabel =>
+      'profile_level_label'.trParams({'level': '$level'});
 
   // ─── Lifecycle ────────────────────────────────────────────────────────────
 
@@ -98,11 +109,11 @@ class ProfileController extends GetxController {
 
   void saveProfile() {
     displayName.value = nameController.text.trim().isEmpty
-        ? 'Athlete'
+        ? 'profile_name_hint'.tr
         : nameController.text.trim();
     Get.snackbar(
-      'Profile saved',
-      'Your profile has been updated.',
+      'profile_saved_title'.tr,
+      'profile_saved_body'.tr,
       snackPosition: SnackPosition.BOTTOM,
     );
   }
@@ -110,8 +121,8 @@ class ProfileController extends GetxController {
   void saveEmail() {
     email.value = emailController.text.trim();
     Get.snackbar(
-      'Account saved',
-      'Your email has been updated.',
+      'profile_email_saved_title'.tr,
+      'profile_email_saved_body'.tr,
       snackPosition: SnackPosition.BOTTOM,
     );
   }
@@ -120,8 +131,8 @@ class ProfileController extends GetxController {
     heightCm.value = double.tryParse(heightController.text) ?? heightCm.value;
     weightKg.value = double.tryParse(weightController.text) ?? weightKg.value;
     Get.snackbar(
-      'Body stats saved',
-      'Your stats have been updated.',
+      'profile_body_saved_title'.tr,
+      'profile_body_saved_body'.tr,
       snackPosition: SnackPosition.BOTTOM,
     );
   }
@@ -132,27 +143,27 @@ class ProfileController extends GetxController {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surfaceCard,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'Reset settings',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          'profile_reset_title'.tr,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        content: const Text(
-          'This will restore all settings to their defaults. Are you sure?',
-          style: TextStyle(color: AppColors.neutral60),
+        content: Text(
+          'profile_reset_body'.tr,
+          style: const TextStyle(color: AppColors.neutral60),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel',
-                style: TextStyle(color: AppColors.neutral60)),
+            child: Text('profile_reset_cancel'.tr,
+                style: const TextStyle(color: AppColors.neutral60)),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
               resetSettings();
             },
-            child: const Text('Reset',
-                style: TextStyle(
+            child: Text('profile_reset_confirm'.tr,
+                style: const TextStyle(
                     color: AppColors.error100, fontWeight: FontWeight.bold)),
           ),
         ],
@@ -162,9 +173,9 @@ class ProfileController extends GetxController {
 
   void resetSettings() {
     selectedAvatar.value = '💪';
-    displayName.value = 'Athlete';
+    displayName.value = 'profile_name_hint'.tr;
     email.value = '';
-    nameController.text = 'Athlete';
+    nameController.text = displayName.value;
     emailController.text = '';
     heightCm.value = 180;
     weightKg.value = 75;
@@ -175,10 +186,10 @@ class ProfileController extends GetxController {
     streakAlerts.value = true;
     albertTips.value = false;
     setTextSize(TextSize.normal);
-    language.value = 'en';
+    setLanguage('en');
     Get.snackbar(
-      'Settings reset',
-      'All settings have been restored to defaults.',
+      'profile_reset_done_title'.tr,
+      'profile_reset_done_body'.tr,
       snackPosition: SnackPosition.BOTTOM,
     );
   }

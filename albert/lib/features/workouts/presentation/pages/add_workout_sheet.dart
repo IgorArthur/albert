@@ -63,7 +63,7 @@ class AddWorkoutSheet extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // NAME
-                  const Text('NAME').overline(color: AppColors.neutral60),
+                  Text('workouts_name'.tr).overline(color: AppColors.neutral60),
                   const SizedBox(height: 8),
                   Container(
                     decoration: BoxDecoration(
@@ -75,16 +75,16 @@ class AddWorkoutSheet extends StatelessWidget {
                     child: TextField(
                       controller: controller.newRoutineNameController,
                       style: const TextStyle(color: Colors.white, fontSize: 16),
-                      decoration: const InputDecoration(
-                        hintText: 'e.g. Upper body burner',
-                        hintStyle: TextStyle(color: AppColors.neutral60),
+                      decoration: InputDecoration(
+                        hintText: 'workouts_name_hint'.tr,
+                        hintStyle: const TextStyle(color: AppColors.neutral60),
                         border: InputBorder.none,
                       ),
                     ),
                   ),
                   const SizedBox(height: 20),
                   // ICON
-                  const Text('ICON').overline(color: AppColors.neutral60),
+                  Text('workouts_icon'.tr).overline(color: AppColors.neutral60),
                   const SizedBox(height: 8),
                   const RoutineIconSelector(),
                   const SizedBox(height: 24),
@@ -92,14 +92,14 @@ class AddWorkoutSheet extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('EXERCISES').overline(color: AppColors.neutral60),
+                      Text('workouts_exercises'.tr).overline(color: AppColors.neutral60),
                       GestureDetector(
                         onTap: controller.addExerciseToDraft,
                         child: Row(
                           children: [
                             const Icon(Icons.add, color: AppColors.primary100, size: 16),
                             const SizedBox(width: 4),
-                            const Text('Add').overline(color: AppColors.primary100),
+                            Text('workouts_add'.tr).overline(color: AppColors.primary100),
                           ],
                         ),
                       ),

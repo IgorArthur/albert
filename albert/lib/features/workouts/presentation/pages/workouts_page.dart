@@ -21,11 +21,11 @@ class WorkoutsPage extends StatelessWidget {
             children: [
               const SizedBox(height: 24),
               // Header
-              const Text('LIBRARY').overline(color: AppColors.primary100),
+              Text('workouts_library'.tr).overline(color: AppColors.primary100),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Workouts').display(color: Colors.white),
+                  Text('workouts_title'.tr).display(color: Colors.white),
                   GestureDetector(
                     onTap: () => controller.showAddSheet(context),
                     child: Container(
@@ -41,7 +41,7 @@ class WorkoutsPage extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 4),
-              const Text('Pick a routine or build a new one.').body2(color: AppColors.neutral60),
+              Text('workouts_subtitle'.tr).body2(color: AppColors.neutral60),
               const SizedBox(height: 24),
               // Routines list
               Expanded(
@@ -58,12 +58,12 @@ class WorkoutsPage extends StatelessWidget {
                             size: 48,
                           ),
                           const SizedBox(height: 16),
-                          const Text('No workouts added yet.').subtitle2(color: AppColors.neutral60),
+                          Text('workouts_empty'.tr).subtitle2(color: AppColors.neutral60),
                           const SizedBox(height: 8),
                           ElevatedButton.icon(
                             onPressed: () => controller.showAddSheet(context),
                             icon: const Icon(Icons.add),
-                            label: const Text('Build new routine'),
+                           label: Text('workouts_build_new'.tr),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary100,
                               foregroundColor: Colors.white,

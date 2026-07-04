@@ -2,6 +2,7 @@ import 'package:albert/features/home/presentation/getx/home_controller.dart';
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class CoachAlbertCard extends StatelessWidget {
   const CoachAlbertCard({super.key});
@@ -30,10 +31,10 @@ class CoachAlbertCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("ASK").overline(color: AppColors.neutral60),
+                  Text('home_ask'.tr).overline(color: AppColors.neutral60),
                   const SizedBox(height: 4),
-                  const Text(
-                    "Coach Albert",
+                  Text(
+                    'home_coach_albert'.tr,
                     style: TextStyle(
                       fontFamily: 'Montserrat',
                       fontSize: 18,

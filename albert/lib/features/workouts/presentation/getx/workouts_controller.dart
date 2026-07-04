@@ -25,9 +25,11 @@ class WorkoutsController extends GetxController {
 
   bool get isEditingMode => editingRoutineId != null;
 
-  String get sheetTitle => isEditingMode ? 'Edit routine' : 'New routine';
+  String get sheetTitle =>
+      isEditingMode ? 'workouts_edit_routine'.tr : 'workouts_new_routine'.tr;
 
-  String get saveButtonLabel => isEditingMode ? 'Save changes' : 'Save routine';
+  String get saveButtonLabel =>
+      isEditingMode ? 'workouts_save_changes'.tr : 'workouts_save_routine'.tr;
 
   // ─── Lifecycle ────────────────────────────────────────────────────────────
 
@@ -73,34 +75,36 @@ class WorkoutsController extends GetxController {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surfaceCard,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'Delete Routine',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          'workouts_delete_title'.tr,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         content: Text(
-          'Are you sure you want to delete "${routine.name}"?',
+          'workouts_delete_body'.trParams({'name': routine.name}),
           style: const TextStyle(color: AppColors.neutral60),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.neutral60)),
+            child: Text('workouts_cancel'.tr,
+                style: const TextStyle(color: AppColors.neutral60)),
           ),
           TextButton(
             onPressed: () {
               deleteRoutine(routine.id);
               Navigator.pop(ctx);
               Get.snackbar(
-                'Routine Deleted',
-                '"${routine.name}" has been deleted.',
+                'workouts_deleted_title'.tr,
+                'workouts_deleted_body'.trParams({'name': routine.name}),
                 backgroundColor: AppColors.neutral30,
                 colorText: Colors.white,
                 snackPosition: SnackPosition.BOTTOM,
               );
             },
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: AppColors.error100, fontWeight: FontWeight.bold),
+            child: Text(
+              'workouts_delete'.tr,
+              style: const TextStyle(
+                  color: AppColors.error100, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -151,7 +155,7 @@ class WorkoutsController extends GetxController {
     final validationError = validateRoutine(name, newRoutineExercises);
     if (validationError != null) {
       Get.snackbar(
-        'Validation Error',
+        'workouts_validation_error'.tr,
         validationError,
         backgroundColor: AppColors.error100,
         colorText: Colors.white,
@@ -194,14 +198,23 @@ class WorkoutsController extends GetxController {
   // ─── Validation ───────────────────────────────────────────────────────────
 
   String? validateRoutine(String name, List<Exercise> exercises) {
-    if (name.trim().isEmpty) return 'Please enter a routine name.';
-    if (exercises.isEmpty) return 'Please add at least one exercise.';
+    if (name.trim().isEmpty) return 'workouts_validation_name'.tr;
+    if (exercises.isEmpty) return 'workouts_validation_one_exercise'.tr;
     for (var i = 0; i < exercises.length; i++) {
       final exercise = exercises[i];
-      if (exercise.name.trim().isEmpty) return 'Please enter a name for Exercise ${i + 1}.';
-      if (exercise.sets <= 0) return 'Sets for "${exercise.name}" must be greater than 0.';
-      if (exercise.reps <= 0) return 'Reps for "${exercise.name}" must be greater than 0.';
-      if (exercise.kg < 0) return 'Weight for "${exercise.name}" cannot be negative.';
+      if (exercise.name.trim().isEmpty) {
+        return 'workouts_validation_exercise_name'
+            .trParams({'index': '${i + 1}'});
+      }
+      if (exercise.sets <= 0) {
+        return 'workouts_validation_sets'.trParams({'name': exercise.name});
+      }
+      if (exercise.reps <= 0) {
+        return 'workouts_validation_reps'.trParams({'name': exercise.name});
+      }
+      if (exercise.kg < 0) {
+        return 'workouts_validation_weight'.trParams({'name': exercise.name});
+      }
     }
     return null;
   }
@@ -236,8 +249,8 @@ class WorkoutsController extends GetxController {
     boxWorkoutSessions.put(session.id, session);
 
     Get.snackbar(
-      'Workout Session',
-      'Started "${routine.name}" session! Logged to Hive.',
+      'workouts_session_title'.tr,
+      'workouts_session_body'.trParams({'name': routine.name}),
       backgroundColor: AppColors.primary100.withValues(alpha: 0.9),
       colorText: Colors.white,
       snackPosition: SnackPosition.BOTTOM,

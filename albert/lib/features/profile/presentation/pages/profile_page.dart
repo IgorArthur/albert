@@ -30,11 +30,11 @@ class ProfilePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Page Header ──────────────────────────────────────────────
-              Text('PROFILE').overline(color: AppColors.primary100),
+              Text('profile_overline'.tr).overline(color: AppColors.primary100),
               const SizedBox(height: 4),
-              Text('Your account').display(color: AppColors.neutral100),
+              Text('profile_title'.tr).display(color: AppColors.neutral100),
               const SizedBox(height: 4),
-              Text('Tune Albert to fit you.').body1(color: AppColors.neutral60),
+              Text('profile_subtitle'.tr).body1(color: AppColors.neutral60),
               const SizedBox(height: 24),
 
               // ── Summary Card ─────────────────────────────────────────────
@@ -44,22 +44,22 @@ class ProfilePage extends StatelessWidget {
               // ── Edit Profile ─────────────────────────────────────────────
               ProfileSectionCard(
                 icon: Icons.person_outline_rounded,
-                title: 'EDIT PROFILE',
+                title: 'profile_edit_profile'.tr,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     ProfileTextField(
-                      label: 'Name',
+                      label: 'profile_name'.tr,
                       controller: c.nameController,
-                      hint: 'Athlete',
+                      hint: 'profile_name_hint'.tr,
                     ),
                     const SizedBox(height: 20),
-                    Text('Avatar').body2Bold(color: AppColors.neutral100),
+                    Text('profile_avatar'.tr).body2Bold(color: AppColors.neutral100),
                     const SizedBox(height: 12),
                     const ProfileAvatarPicker(),
                     const SizedBox(height: 20),
                     _PrimaryButton(
-                      label: 'Save profile',
+                      label: 'profile_save_profile'.tr,
                       onTap: c.saveProfile,
                     ),
                   ],
@@ -70,25 +70,25 @@ class ProfilePage extends StatelessWidget {
               // ── Account ──────────────────────────────────────────────────
               ProfileSectionCard(
                 icon: Icons.email_outlined,
-                title: 'ACCOUNT',
+                title: 'profile_account'.tr,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     ProfileTextField(
-                      label: 'Email',
+                      label: 'profile_email'.tr,
                       controller: c.emailController,
-                      hint: 'you@example.com',
+                      hint: 'profile_email_hint'.tr,
                       keyboardType: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: 16),
                     _SecondaryButton(
                       icon: Icons.save_outlined,
-                      label: 'Save email',
+                      label: 'profile_save_email'.tr,
                       onTap: c.saveEmail,
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Albert v1 stores data locally on this device.',
+                      'profile_local_data'.tr,
                     ).caption(color: AppColors.neutral60),
                   ],
                 ),
@@ -98,7 +98,7 @@ class ProfilePage extends StatelessWidget {
               // ── Body Stats ───────────────────────────────────────────────
               ProfileSectionCard(
                 icon: Icons.straighten_rounded,
-                title: 'BODY STATS',
+                title: 'profile_body_stats'.tr,
                 child: Obx(() => Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -126,7 +126,7 @@ class ProfilePage extends StatelessWidget {
                     const SizedBox(height: 16),
                     _SecondaryButton(
                       icon: Icons.save_outlined,
-                      label: 'Save body stats',
+                      label: 'profile_save_body'.tr,
                       onTap: c.saveBodyStats,
                     ),
                   ],
@@ -135,54 +135,54 @@ class ProfilePage extends StatelessWidget {
               const SizedBox(height: 16),
 
               // ── Units ────────────────────────────────────────────────────
-              const ProfileSectionCard(
+              ProfileSectionCard(
                 icon: Icons.balance_rounded,
-                title: 'UNITS',
-                child: ProfileUnitToggle(),
+                title: 'profile_units'.tr,
+                child: const ProfileUnitToggle(),
               ),
               const SizedBox(height: 16),
 
               // ── Font Size ────────────────────────────────────────────────
-              const ProfileSectionCard(
+              ProfileSectionCard(
                 icon: Icons.text_fields_rounded,
-                title: 'TEXT SIZE',
-                child: ProfileFontSizePicker(),
+                title: 'profile_text_size'.tr,
+                child: const ProfileFontSizePicker(),
               ),
               const SizedBox(height: 16),
 
               // ── Language ─────────────────────────────────────────────────
-              const ProfileSectionCard(
+              ProfileSectionCard(
                 icon: Icons.language_rounded,
-                title: 'LANGUAGE',
-                child: ProfileLanguageSelector(),
+                title: 'profile_language'.tr,
+                child: const ProfileLanguageSelector(),
               ),
               const SizedBox(height: 16),
 
               // ── Notifications ────────────────────────────────────────────
               ProfileSectionCard(
                 icon: Icons.notifications_outlined,
-                title: 'NOTIFICATIONS',
+                title: 'profile_notifications'.tr,
                 child: Obx(() => Column(
                       children: [
                         ProfileNotificationTile(
-                          title: 'Workout reminders',
-                          subtitle: 'Nudge me on training days.',
+                          title: 'profile_workout_reminders'.tr,
+                          subtitle: 'profile_workout_reminders_sub'.tr,
                           value: c.workoutReminders.value,
                           onChanged: (v) => c.workoutReminders.value = v,
                           enabled: false,
                         ),
                         const SizedBox(height: 16),
                         ProfileNotificationTile(
-                          title: 'Streak alerts',
-                          subtitle: "Don't let the streak die.",
+                          title: 'profile_streak_alerts'.tr,
+                          subtitle: 'profile_streak_alerts_sub'.tr,
                           value: c.streakAlerts.value,
                           onChanged: (v) => c.streakAlerts.value = v,
                           enabled: false,
                         ),
                         const SizedBox(height: 16),
                         ProfileNotificationTile(
-                          title: 'Albert tips',
-                          subtitle: 'Occasional coaching insights.',
+                          title: 'profile_albert_tips'.tr,
+                          subtitle: 'profile_albert_tips_sub'.tr,
                           value: c.albertTips.value,
                           onChanged: (v) => c.albertTips.value = v,
                           enabled: false,
@@ -195,13 +195,13 @@ class ProfilePage extends StatelessWidget {
               // ── Reset ────────────────────────────────────────────────────
               ProfileSectionCard(
                 icon: Icons.restart_alt_rounded,
-                title: 'RESET',
+                title: 'profile_reset'.tr,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _SecondaryButton(
                       icon: Icons.replay_rounded,
-                      label: 'Reset settings',
+                      label: 'profile_reset_settings'.tr,
                       onTap: () => c.confirmReset(context),
                     ),
                     const SizedBox(height: 16),
@@ -211,7 +211,7 @@ class ProfilePage extends StatelessWidget {
                         const Icon(Icons.logout_rounded,
                             color: AppColors.neutral60, size: 16),
                         const SizedBox(width: 8),
-                        Text('Sign out (coming soon)').caption(color: AppColors.neutral60),
+                        Text('profile_sign_out'.tr).caption(color: AppColors.neutral60),
                       ],
                     ),
                   ],
