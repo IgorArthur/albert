@@ -1,3 +1,4 @@
+import 'package:albert/features/profile/presentation/getx/profile_controller.dart';
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/workouts/data/hive/exercise.dart';
 import 'package:albert/features/workouts/presentation/getx/workouts_controller.dart';
@@ -83,7 +84,7 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
           ),
           const Divider(color: AppColors.neutral30, height: 16, thickness: 0.5),
           const SizedBox(height: 8),
-          Row(
+          Obx(() => Row(
             children: [
               ExerciseNumberInput(
                 label: 'SETS',
@@ -98,14 +99,14 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
               ),
               const SizedBox(width: 12),
               ExerciseNumberInput(
-                label: 'KG',
+                label: ProfileController.to.weightUnitDisplay,
                 initialValue: exercise.kg % 1 == 0
                     ? exercise.kg.toInt().toString()
                     : exercise.kg.toString(),
                 onChanged: (val) => exercise.kg = double.tryParse(val) ?? 0,
               ),
             ],
-          ),
+          )),
         ],
       ),
     );
