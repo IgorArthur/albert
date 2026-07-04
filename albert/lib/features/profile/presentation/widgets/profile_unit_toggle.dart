@@ -17,13 +17,13 @@ class ProfileUnitToggle extends StatelessWidget {
       return Row(
         children: [
           _UnitButton(
-            label: 'Metric (Kg / Cm)',
+            label: 'profile_metric'.tr,
             selected: metric,
             onTap: () => c.toggleUnit(true),
           ),
           const SizedBox(width: 12),
           _UnitButton(
-            label: 'Imperial (Lb / In)',
+            label: 'profile_imperial'.tr,
             selected: !metric,
             onTap: () => c.toggleUnit(false),
           ),

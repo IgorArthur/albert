@@ -17,21 +17,21 @@ class ProfileFontSizePicker extends StatelessWidget {
         children: [
           _SizeOption(
             size: TextSize.small,
-            label: 'Compact',
+            label: 'profile_compact'.tr,
             letterFontSize: 18,
             current: current,
           ),
           const SizedBox(width: 12),
           _SizeOption(
             size: TextSize.normal,
-            label: 'Standard',
+            label: 'profile_standard'.tr,
             letterFontSize: 24,
             current: current,
           ),
           const SizedBox(width: 12),
           _SizeOption(
             size: TextSize.large,
-            label: 'Better viz',
+            label: 'profile_better_viz'.tr,
             letterFontSize: 30,
             current: current,
           ),

@@ -18,16 +18,16 @@ class CustomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final destinations = [
-      const DestinationsModel(
-        label: "Home",
+      DestinationsModel(
+        label: 'nav_home'.tr,
         icon: Icons.home_outlined,
       ),
-      const DestinationsModel(
-        label: "Workouts",
+      DestinationsModel(
+        label: 'nav_workouts'.tr,
         icon: Icons.fitness_center,
       ),
-      const DestinationsModel(
-        label: "Profile",
+      DestinationsModel(
+        label: 'nav_profile'.tr,
         icon: Icons.person_outline_rounded,
       ),
     ];

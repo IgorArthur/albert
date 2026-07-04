@@ -3,6 +3,7 @@ import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:albert/features/workouts/data/hive/routine.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class RoutineCard extends StatelessWidget {
   const RoutineCard({super.key, required this.routine});
@@ -40,7 +41,7 @@ class RoutineCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            Text("${routine.exercises.length} exercises").caption(color: AppColors.neutral60),
+            Text('home_exercises'.trParams({'count': '${routine.exercises.length}'})).caption(color: AppColors.neutral60),
           ],
         ),
       ),

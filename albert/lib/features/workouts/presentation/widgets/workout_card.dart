@@ -3,6 +3,7 @@ import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:albert/features/workouts/data/hive/routine.dart';
 import 'package:albert/features/workouts/presentation/getx/workouts_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class WorkoutCard extends StatelessWidget {
   const WorkoutCard({super.key, required this.routine});
@@ -67,7 +68,10 @@ class WorkoutCard extends StatelessWidget {
                           ).body2(color: AppColors.neutral60),
                           const SizedBox(height: 6),
                           Text(
-                            '${routine.exercises.length} exercises · ~${routine.totalSets} sets',
+                            'workouts_exercises_sets'.trParams({
+                              'exercises': '${routine.exercises.length}',
+                              'sets': '${routine.totalSets}',
+                            }),
                           ).captionBold(color: AppColors.primary100),
                         ],
                       ),
@@ -109,7 +113,7 @@ class WorkoutCard extends StatelessWidget {
                       size: 20,
                     ),
                     const SizedBox(width: 6),
-                    const Text('Start session').body2Bold(color: AppColors.primary100),
+                    Text('workouts_start_session'.tr).body2Bold(color: AppColors.primary100),
                   ],
                 ),
               ),

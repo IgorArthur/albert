@@ -26,11 +26,11 @@ class HomePage extends StatelessWidget {
             children: [
               const SizedBox(height: 12),
               // Welcome Header
-              Text("WELCOME BACK").overline(color: AppColors.primary100),
+              Text('home_welcome_back'.tr).overline(color: AppColors.primary100),
               const SizedBox(height: 4),
-              Text("Let's lift, athlete.").display(color: AppColors.neutral100),
+              Text('home_subtitle'.tr).display(color: AppColors.neutral100),
               const SizedBox(height: 4),
-              Text("Albert is ready to coach your next set.").body1(color: AppColors.neutral60),
+              Text('home_body'.tr).body1(color: AppColors.neutral60),
 
               const SizedBox(height: 28),
               // Athlete Level Card
@@ -59,10 +59,10 @@ class HomePage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Your routines").subtitle1(color: AppColors.neutral100),
+                        Text('home_your_routines'.tr).subtitle1(color: AppColors.neutral100),
                         GestureDetector(
                           onTap: () => controller.seeAllRoutines(context),
-                          child: Text("See all").captionBold(color: AppColors.primary100),
+                          child: Text('home_see_all'.tr).captionBold(color: AppColors.primary100),
                         ),
                       ],
                     ),

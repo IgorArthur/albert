@@ -66,9 +66,9 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
                 child: TextField(
                   controller: _nameController,
                   style: const TextStyle(color: Colors.white, fontSize: 16),
-                  decoration: const InputDecoration(
-                    hintText: 'Exercise name',
-                    hintStyle: TextStyle(color: AppColors.neutral60),
+                  decoration: InputDecoration(
+                    hintText: 'workouts_exercise_hint'.tr,
+                    hintStyle: const TextStyle(color: AppColors.neutral60),
                     border: InputBorder.none,
                   ),
                   onChanged: (val) => exercise.name = val,
@@ -87,13 +87,13 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
           Obx(() => Row(
             children: [
               ExerciseNumberInput(
-                label: 'SETS',
+                label: 'workouts_sets'.tr,
                 initialValue: exercise.sets.toString(),
                 onChanged: (val) => exercise.sets = int.tryParse(val) ?? 0,
               ),
               const SizedBox(width: 12),
               ExerciseNumberInput(
-                label: 'REPS',
+                label: 'workouts_reps'.tr,
                 initialValue: exercise.reps.toString(),
                 onChanged: (val) => exercise.reps = int.tryParse(val) ?? 0,
               ),
