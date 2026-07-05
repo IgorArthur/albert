@@ -21,6 +21,14 @@ class WorkoutsController extends GetxController {
   // Tracks the id of the routine being edited (null = creating new)
   String? editingRoutineId;
 
+  // ── Biset state ───────────────────────────────────────────────────────────
+
+  /// Index of the card that initiated the biset picking flow (null = not picking).
+  final RxnInt pickingBisetIndex = RxnInt();
+
+  /// Maps secondary-exercise index → primary-exercise index.
+  final RxMap<int, int> bisetLinks = <int, int>{}.obs;
+
   // ─── Getters ──────────────────────────────────────────────────────────────
 
   bool get isEditingMode => editingRoutineId != null;
@@ -121,6 +129,7 @@ class WorkoutsController extends GetxController {
     newRoutineExercises.assignAll([
       Exercise(name: '', sets: 3, reps: 10, kg: 0),
     ]);
+    _resetBisetState();
   }
 
   void loadRoutineForEdit(Routine routine) {
@@ -141,7 +150,34 @@ class WorkoutsController extends GetxController {
   void removeExerciseFromDraft(int index) {
     if (newRoutineExercises.length > 1) {
       newRoutineExercises.removeAt(index);
+      _resetBisetState(); // indices shift on removal — safest to reset
     }
+  }
+
+  // ── Biset actions ─────────────────────────────────────────────────────────
+
+  void startPickingBiset(int fromIndex) {
+    pickingBisetIndex.value = fromIndex;
+  }
+
+  void cancelBisetPicking() {
+    pickingBisetIndex.value = null;
+  }
+
+  void linkBiset(int toIndex) {
+    final from = pickingBisetIndex.value;
+    if (from == null || from == toIndex) return;
+    bisetLinks[toIndex] = from;
+    pickingBisetIndex.value = null;
+  }
+
+  void unlinkBiset(int secondaryIndex) {
+    bisetLinks.remove(secondaryIndex);
+  }
+
+  void _resetBisetState() {
+    pickingBisetIndex.value = null;
+    bisetLinks.clear();
   }
 
   void selectIconForDraft(String icon) {

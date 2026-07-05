@@ -1,6 +1,7 @@
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:albert/features/workouts/presentation/getx/workouts_controller.dart';
+import 'package:albert/features/workouts/presentation/widgets/dashed_border_painter.dart';
 import 'package:albert/features/workouts/presentation/widgets/exercise_draft_card.dart';
 import 'package:albert/features/workouts/presentation/widgets/routine_icon_selector.dart';
 import 'package:flutter/material.dart';
@@ -105,7 +106,105 @@ class AddWorkoutSheet extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
+                  // ── Biset banner (dashed, reactive) ──────────────────────
+                  Obx(() {
+                    final isPicking =
+                        controller.pickingBisetIndex.value != null;
+                    final borderColor = isPicking
+                        ? AppColors.primary100
+                        : AppColors.neutral30;
+                    final bgColor = isPicking
+                        ? AppColors.primary100.withValues(alpha: 0.08)
+                        : Colors.transparent;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        CustomPaint(
+                          painter: DashedBorderPainter(
+                            color: borderColor,
+                            radius: 12,
+                            strokeWidth: 1.2,
+                            dashLength: 5,
+                            gapLength: 4,
+                          ),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: bgColor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.link_rounded,
+                                  color: isPicking
+                                      ? AppColors.primary100
+                                      : AppColors.neutral60,
+                                  size: 15,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: isPicking
+                                      ? Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: const [
+                                            Text(
+                                              'Pick the pair',
+                                              style: TextStyle(
+                                                fontFamily: 'Montserrat',
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: AppColors.primary100,
+                                              ),
+                                            ),
+                                            SizedBox(height: 2),
+                                            Text(
+                                              'Tap any dashed exercise below to link it as a biset.',
+                                              style: TextStyle(
+                                                fontFamily: 'Montserrat',
+                                                fontSize: 10,
+                                                color: AppColors.neutral60,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : const Text(
+                                          'Tap the link icon on a card to pair exercises as a biset.',
+                                          style: TextStyle(
+                                            fontFamily: 'Montserrat',
+                                            fontSize: 11,
+                                            color: AppColors.neutral60,
+                                          ),
+                                        ),
+                                ),
+                                if (isPicking) ...
+                                  [
+                                    const SizedBox(width: 10),
+                                    GestureDetector(
+                                      onTap: controller.cancelBisetPicking,
+                                      child: const Text(
+                                        'Cancel',
+                                        style: TextStyle(
+                                          fontFamily: 'Montserrat',
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.primary100,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                    );
+                  }),
                   // Exercise cards
                   Obx(() => Column(
                         children: List.generate(

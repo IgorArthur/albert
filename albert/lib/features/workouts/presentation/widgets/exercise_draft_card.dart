@@ -2,9 +2,12 @@ import 'package:albert/features/profile/presentation/getx/profile_controller.dar
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/workouts/data/hive/exercise.dart';
 import 'package:albert/features/workouts/presentation/getx/workouts_controller.dart';
+import 'package:albert/features/workouts/presentation/widgets/dashed_border_painter.dart';
 import 'package:albert/features/workouts/presentation/widgets/exercise_number_input.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+// ─── Exercise draft card ──────────────────────────────────────────────────────
 
 class ExerciseDraftCard extends StatefulWidget {
   const ExerciseDraftCard({
@@ -37,28 +40,85 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = WorkoutsController.to;
+    final ctrl = WorkoutsController.to;
     final exercise = widget.exercise;
+    final idx = widget.index;
 
-    return Container(
-      key: ValueKey(exercise.hashCode),
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.neutral30, width: 0.5),
-      ),
-      child: Column(
+    return Obx(() {
+      final pickingIdx = ctrl.pickingBisetIndex.value;
+      final links = ctrl.bisetLinks;
+
+      // ── Derive card state ────────────────────────────────────────────────────
+      final isPrimary = pickingIdx == idx; // this card started the pick flow
+      final isSecondary = links.containsKey(idx); // this card is the paired target
+      final isPicking = pickingIdx != null;
+      final isAvailableForPick = isPicking && !isPrimary && !isSecondary;
+
+      // Find whether this card is the primary (source) of an existing biset pair
+      final secondaryKey = links.entries
+          .where((e) => e.value == idx)
+          .map((e) => e.key)
+          .firstOrNull;
+      final isPrimaryOfLink = secondaryKey != null;
+
+      // Label shown above the secondary card
+      final primaryIdx = links[idx]; // null when this is not secondary
+      final primaryEx =
+          primaryIdx != null ? ctrl.newRoutineExercises[primaryIdx] : null;
+      final primaryLabel = isSecondary
+          ? ((primaryEx != null && primaryEx.name.trim().isNotEmpty)
+              ? primaryEx.name.trim().toUpperCase()
+              : 'EX ${(primaryIdx! + 1).toString().padLeft(2, '0')}')
+          : '';
+
+      // Label shown above the primary card (symmetric)
+      final secondaryEx =
+          secondaryKey != null ? ctrl.newRoutineExercises[secondaryKey] : null;
+      final secondaryLabel = isPrimaryOfLink
+          ? ((secondaryEx != null && secondaryEx.name.trim().isNotEmpty)
+              ? secondaryEx.name.trim().toUpperCase()
+              : 'EX ${(secondaryKey! + 1).toString().padLeft(2, '0')}')
+          : '';
+
+      // ── Link icon tap ────────────────────────────────────────────────────────
+      void handleLinkTap() {
+        if (isPrimary) {
+          ctrl.cancelBisetPicking();
+        } else if (isSecondary) {
+          ctrl.unlinkBiset(idx);
+        } else if (isAvailableForPick) {
+          ctrl.linkBiset(idx);
+        } else if (isPrimaryOfLink) {
+          ctrl.unlinkBiset(secondaryKey);
+        } else {
+          ctrl.startPickingBiset(idx);
+        }
+      }
+
+      // ── Visual states ────────────────────────────────────────────────────────
+      final linkActive = isPrimary || isSecondary || isPrimaryOfLink;
+      final linkIconColor =
+          linkActive ? AppColors.primary100 : AppColors.neutral30;
+
+      // Dashed border: source card (orange) or available-to-pick card (neutral)
+      final showDashed = isPrimary || isAvailableForPick;
+      // Solid orange border: any card that's part of a committed biset pair
+      final showSolidOrange = (isSecondary || isPrimaryOfLink) && !showDashed;
+
+      // ── Card inner content ───────────────────────────────────────────────────
+      final content = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Title row: index · name · [link icon] · [trash icon]
           Row(
             children: [
               Text(
-                (widget.index + 1).toString().padLeft(2, '0'),
+                (idx + 1).toString().padLeft(2, '0'),
                 style: const TextStyle(
                   color: AppColors.primary100,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
+                  fontFamily: 'Montserrat',
                 ),
               ),
               const SizedBox(width: 12),
@@ -70,45 +130,144 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
                     hintText: 'workouts_exercise_hint'.tr,
                     hintStyle: const TextStyle(color: AppColors.neutral60),
                     border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
                   ),
                   onChanged: (val) => exercise.name = val,
                 ),
               ),
-              Obx(() => controller.newRoutineExercises.length > 1
-                  ? IconButton(
-                      icon: const Icon(Icons.delete_outline, color: AppColors.error100),
-                      onPressed: () => controller.removeExerciseFromDraft(widget.index),
+              // ── Biset link icon ──────────────────────────────────────────────
+              GestureDetector(
+                onTap: handleLinkTap,
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Icon(
+                    Icons.link_rounded,
+                    size: 20,
+                    color: linkIconColor,
+                  ),
+                ),
+              ),
+              // ── Delete icon (only when >1 exercise) ─────────────────────────
+              Obx(() => ctrl.newRoutineExercises.length > 1
+                  ? GestureDetector(
+                      onTap: () => ctrl.removeExerciseFromDraft(idx),
+                      child: const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Icon(Icons.delete_outline,
+                            color: AppColors.error100, size: 20),
+                      ),
                     )
                   : const SizedBox.shrink()),
             ],
           ),
-          const Divider(color: AppColors.neutral30, height: 16, thickness: 0.5),
-          const SizedBox(height: 8),
+          // ── Divider + set/rep/weight inputs ─────────────────────────────────
+          const Divider(color: AppColors.neutral30, height: 20, thickness: 0.5),
           Obx(() => Row(
-            children: [
-              ExerciseNumberInput(
-                label: 'workouts_sets'.tr,
-                initialValue: exercise.sets.toString(),
-                onChanged: (val) => exercise.sets = int.tryParse(val) ?? 0,
-              ),
-              const SizedBox(width: 12),
-              ExerciseNumberInput(
-                label: 'workouts_reps'.tr,
-                initialValue: exercise.reps.toString(),
-                onChanged: (val) => exercise.reps = int.tryParse(val) ?? 0,
-              ),
-              const SizedBox(width: 12),
-              ExerciseNumberInput(
-                label: ProfileController.to.weightUnitDisplay,
-                initialValue: exercise.kg % 1 == 0
-                    ? exercise.kg.toInt().toString()
-                    : exercise.kg.toString(),
-                onChanged: (val) => exercise.kg = double.tryParse(val) ?? 0,
-              ),
-            ],
-          )),
+                children: [
+                  ExerciseNumberInput(
+                    label: 'workouts_sets'.tr,
+                    initialValue: exercise.sets.toString(),
+                    onChanged: (val) => exercise.sets = int.tryParse(val) ?? 0,
+                  ),
+                  const SizedBox(width: 12),
+                  ExerciseNumberInput(
+                    label: 'workouts_reps'.tr,
+                    initialValue: exercise.reps.toString(),
+                    onChanged: (val) => exercise.reps = int.tryParse(val) ?? 0,
+                  ),
+                  const SizedBox(width: 12),
+                  ExerciseNumberInput(
+                    label: ProfileController.to.weightUnitDisplay,
+                    initialValue: exercise.kg % 1 == 0
+                        ? exercise.kg.toInt().toString()
+                        : exercise.kg.toString(),
+                    onChanged: (val) => exercise.kg = double.tryParse(val) ?? 0,
+                  ),
+                ],
+              )),
         ],
-      ),
-    );
+      );
+
+      // ── Wrap content with the right border style ─────────────────────────────
+      Widget card;
+      if (showDashed) {
+        card = CustomPaint(
+          painter: DashedBorderPainter(
+            color: isPrimary ? AppColors.primary100 : AppColors.neutral30,
+            radius: 16,
+            strokeWidth: 1.5,
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceCard,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: content,
+          ),
+        );
+      } else {
+        card = Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceCard,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color:
+                  showSolidOrange ? AppColors.primary100 : AppColors.neutral30,
+              width: showSolidOrange ? 1.5 : 0.5,
+            ),
+          ),
+          child: content,
+        );
+      }
+
+      // Wrap available-to-pick cards so tapping anywhere completes the link.
+      if (isAvailableForPick) {
+        card = GestureDetector(
+          onTap: () => ctrl.linkBiset(idx),
+          behavior: HitTestBehavior.opaque,
+          child: card,
+        );
+      }
+
+      // ── Labels above the card + spacing below ────────────────────────────────
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (isPrimaryOfLink)
+            Padding(
+              padding: const EdgeInsets.only(left: 6, bottom: 5),
+              child: Text(
+                'BISET · WITH $secondaryLabel',
+                style: const TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                  color: AppColors.primary100,
+                ),
+              ),
+            ),
+          if (isSecondary)
+            Padding(
+              padding: const EdgeInsets.only(left: 6, bottom: 5),
+              child: Text(
+                'BISET · WITH $primaryLabel',
+                style: const TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                  color: AppColors.primary100,
+                ),
+              ),
+            ),
+          card,
+          const SizedBox(height: 16),
+        ],
+      );
+    });
   }
 }
