@@ -14,10 +14,13 @@ class ExerciseDraftCard extends StatefulWidget {
     super.key,
     required this.index,
     required this.exercise,
+    this.isGrouped = false,
   });
 
   final int index;
   final Exercise exercise;
+  /// When true the card is inside a biset group wrapper — skip its own bottom margin.
+  final bool isGrouped;
 
   @override
   State<ExerciseDraftCard> createState() => _ExerciseDraftCardState();
@@ -52,7 +55,6 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
       final isPrimary = pickingIdx == idx; // this card started the pick flow
       final isSecondary = links.containsKey(idx); // this card is the paired target
       final isPicking = pickingIdx != null;
-      final isAvailableForPick = isPicking && !isPrimary && !isSecondary;
 
       // Find whether this card is the primary (source) of an existing biset pair
       final secondaryKey = links.entries
@@ -60,6 +62,8 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
           .map((e) => e.key)
           .firstOrNull;
       final isPrimaryOfLink = secondaryKey != null;
+
+      final isAvailableForPick = isPicking && !isPrimary && !isSecondary && !isPrimaryOfLink;
 
       // Label shown above the secondary card
       final primaryIdx = links[idx]; // null when this is not secondary
@@ -99,11 +103,6 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
       final linkActive = isPrimary || isSecondary || isPrimaryOfLink;
       final linkIconColor =
           linkActive ? AppColors.primary100 : AppColors.neutral30;
-
-      // Dashed border: source card (orange) or available-to-pick card (neutral)
-      final showDashed = isPrimary || isAvailableForPick;
-      // Solid orange border: any card that's part of a committed biset pair
-      final showSolidOrange = (isSecondary || isPrimaryOfLink) && !showDashed;
 
       // ── Card inner content ───────────────────────────────────────────────────
       final content = Column(
@@ -149,54 +148,75 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
                 ),
               ),
               // ── Delete icon (only when >1 exercise) ─────────────────────────
-              Obx(() => ctrl.newRoutineExercises.length > 1
-                  ? GestureDetector(
-                      onTap: () => ctrl.removeExerciseFromDraft(idx),
-                      child: const Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(Icons.delete_outline,
-                            color: AppColors.error100, size: 20),
-                      ),
-                    )
-                  : const SizedBox.shrink()),
+              if (ctrl.newRoutineExercises.length > 1)
+                GestureDetector(
+                  onTap: () => ctrl.removeExerciseFromDraft(idx),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Icon(Icons.delete_outline,
+                        color: AppColors.error100, size: 20),
+                  ),
+                ),
             ],
           ),
           // ── Divider + set/rep/weight inputs ─────────────────────────────────
           const Divider(color: AppColors.neutral30, height: 20, thickness: 0.5),
-          Obx(() => Row(
-                children: [
-                  ExerciseNumberInput(
-                    label: 'workouts_sets'.tr,
-                    initialValue: exercise.sets.toString(),
-                    onChanged: (val) => exercise.sets = int.tryParse(val) ?? 0,
-                  ),
-                  const SizedBox(width: 12),
-                  ExerciseNumberInput(
-                    label: 'workouts_reps'.tr,
-                    initialValue: exercise.reps.toString(),
-                    onChanged: (val) => exercise.reps = int.tryParse(val) ?? 0,
-                  ),
-                  const SizedBox(width: 12),
-                  ExerciseNumberInput(
-                    label: ProfileController.to.weightUnitDisplay,
-                    initialValue: exercise.kg % 1 == 0
-                        ? exercise.kg.toInt().toString()
-                        : exercise.kg.toString(),
-                    onChanged: (val) => exercise.kg = double.tryParse(val) ?? 0,
-                  ),
-                ],
-              )),
+          Row(
+            children: [
+              ExerciseNumberInput(
+                label: 'workouts_sets'.tr,
+                initialValue: exercise.sets.toString(),
+                onChanged: (val) => exercise.sets = int.tryParse(val) ?? 0,
+              ),
+              const SizedBox(width: 12),
+              ExerciseNumberInput(
+                label: 'workouts_reps'.tr,
+                initialValue: exercise.reps.toString(),
+                onChanged: (val) => exercise.reps = int.tryParse(val) ?? 0,
+              ),
+              const SizedBox(width: 12),
+              ExerciseNumberInput(
+                label: ProfileController.to.weightUnitDisplay,
+                initialValue: exercise.kg % 1 == 0
+                    ? exercise.kg.toInt().toString()
+                    : exercise.kg.toString(),
+                onChanged: (val) => exercise.kg = double.tryParse(val) ?? 0,
+              ),
+            ],
+          ),
         ],
       );
 
       // ── Wrap content with the right border style ─────────────────────────────
       Widget card;
-      if (showDashed) {
+      if (isPrimary) {
+        // Source card: bright orange dashed border
         card = CustomPaint(
-          painter: DashedBorderPainter(
-            color: isPrimary ? AppColors.primary100 : AppColors.neutral30,
+          painter: const DashedBorderPainter(
+            color: AppColors.primary100,
             radius: 16,
             strokeWidth: 1.5,
+            dashLength: 5,
+            gapLength: 4,
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceCard,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: content,
+          ),
+        );
+      } else if (isAvailableForPick) {
+        // Available card: dark orange background + orange dashed border.
+        card = CustomPaint(
+          foregroundPainter: const DashedBorderPainter(
+            color: Color(0xFFE65100),
+            radius: 16,
+            strokeWidth: 1.5,
+            dashLength: 5,
+            gapLength: 4,
           ),
           child: Container(
             padding: const EdgeInsets.all(16),
@@ -208,16 +228,14 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
           ),
         );
       } else {
+        // Linked cards (isSecondary / isPrimaryOfLink) and plain cards
+        // both use the exact same neutral border — no orange on linked cards.
         card = Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: AppColors.surfaceCard,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color:
-                  showSolidOrange ? AppColors.primary100 : AppColors.neutral30,
-              width: showSolidOrange ? 1.5 : 0.5,
-            ),
+            border: Border.all(color: AppColors.neutral30, width: 0.5),
           ),
           child: content,
         );
@@ -236,36 +254,8 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (isPrimaryOfLink)
-            Padding(
-              padding: const EdgeInsets.only(left: 6, bottom: 5),
-              child: Text(
-                'BISET · WITH $secondaryLabel',
-                style: const TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  color: AppColors.primary100,
-                ),
-              ),
-            ),
-          if (isSecondary)
-            Padding(
-              padding: const EdgeInsets.only(left: 6, bottom: 5),
-              child: Text(
-                'BISET · WITH $primaryLabel',
-                style: const TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  color: AppColors.primary100,
-                ),
-              ),
-            ),
           card,
-          const SizedBox(height: 16),
+          if (!widget.isGrouped) const SizedBox(height: 16),
         ],
       );
     });

@@ -205,16 +205,110 @@ class AddWorkoutSheet extends StatelessWidget {
                       ],
                     );
                   }),
-                  // Exercise cards
-                  Obx(() => Column(
-                        children: List.generate(
-                          controller.newRoutineExercises.length,
-                          (index) => ExerciseDraftCard(
-                            index: index,
-                            exercise: controller.newRoutineExercises[index],
+                  // Exercise cards — biset pairs grouped in a grey dashed wrapper
+                  Obx(() {
+                    final exercises = controller.newRoutineExercises;
+                    final links = controller.bisetLinks;
+
+                    // Build a set of secondary indices so we can skip them
+                    // (they will be rendered inside their primary's group).
+                    final secondaryIndices = links.keys.toSet();
+
+                    // Map secondary → primary for quick lookup
+                    // links: { secondaryIdx: primaryIdx }
+                    // We also need primary → secondary.
+                    final primaryToSecondary = <int, int>{
+                      for (final e in links.entries) e.value: e.key,
+                    };
+
+                    final widgets = <Widget>[];
+
+                    for (var i = 0; i < exercises.length; i++) {
+                      if (secondaryIndices.contains(i)) continue; // handled inside group
+
+                      final secondaryIdx = primaryToSecondary[i];
+                      final isPaired = secondaryIdx != null &&
+                          secondaryIdx < exercises.length;
+
+                      if (isPaired) {
+                        // ── Biset group wrapper ──────────────────────────────
+                        widgets.add(
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: CustomPaint(
+                              painter: DashedBorderPainter(
+                                color: Colors.grey.shade600,
+                                radius: 20,
+                                strokeWidth: 1.2,
+                                dashLength: 6,
+                                gapLength: 4,
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.withValues(alpha: 0.04),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                padding: const EdgeInsets.all(10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    // BISET label at the top of the group
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 4, bottom: 8),
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.link_rounded,
+                                            size: 12,
+                                            color: AppColors.primary100,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          const Text(
+                                            'BISET',
+                                            style: TextStyle(
+                                              fontFamily: 'Montserrat',
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                              letterSpacing: 1.4,
+                                              color: AppColors.primary100,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    // Primary card
+                                    ExerciseDraftCard(
+                                      index: i,
+                                      exercise: exercises[i],
+                                      isGrouped: true,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    // Secondary card
+                                    ExerciseDraftCard(
+                                      index: secondaryIdx,
+                                      exercise: exercises[secondaryIdx],
+                                      isGrouped: true,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      )),
+                        );
+                      } else {
+                        // ── Regular (unpaired) card ──────────────────────────
+                        widgets.add(
+                          ExerciseDraftCard(
+                            index: i,
+                            exercise: exercises[i],
+                          ),
+                        );
+                      }
+                    }
+
+                    return Column(children: widgets);
+                  }),
                 ],
               ),
             ),
