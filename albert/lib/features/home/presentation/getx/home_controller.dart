@@ -1,5 +1,6 @@
 import 'package:albert/features/utils/go_router/files/routes.dart';
 import 'package:albert/features/workouts/data/hive/routine.dart';
+import 'package:albert/features/workouts/presentation/getx/session_controller.dart';
 import 'package:albert/features/workouts/presentation/getx/workouts_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,19 +28,22 @@ class HomeController extends GetxController {
 
   // ─── Actions ──────────────────────────────────────────────────────────────
 
-  void startNextWorkout() {
-    // TODO: navigate to workout session
+  void startNextWorkout(BuildContext context) {
+    final routines = WorkoutsController.to.routines;
+    if (routines.isEmpty) return;
+    SessionController.to.showStartConfirmation(context, routines.first);
   }
 
   void openCoach() {
     // TODO: navigate to Coach Albert chat
   }
 
-  void onRoutineTap(Routine routine) {
-    // TODO: navigate to routine detail
+  void onRoutineTap(BuildContext context, Routine routine) {
+    SessionController.to.showStartConfirmation(context, routine);
   }
 
   void seeAllRoutines(BuildContext context) {
     context.go(Routes.workoutsPage);
   }
 }
+

@@ -1,6 +1,7 @@
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:albert/features/workouts/data/hive/routine.dart';
+import 'package:albert/features/workouts/presentation/getx/session_controller.dart';
 import 'package:albert/features/workouts/presentation/getx/workouts_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -97,7 +98,7 @@ class WorkoutCard extends StatelessWidget {
           Material(
             color: Colors.transparent,
             child: InkWell(
-              onTap: () => controller.startWorkoutSession(routine),
+              onTap: () => SessionController.to.showStartConfirmation(context, routine),
               borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(20),
                 bottomRight: Radius.circular(20),

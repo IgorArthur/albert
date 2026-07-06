@@ -65,6 +65,16 @@ const Map<String, String> _en = {
   'workouts_validation_sets': 'Sets for "@name" must be greater than 0.',
   'workouts_validation_reps': 'Reps for "@name" must be greater than 0.',
   'workouts_validation_weight': 'Weight for "@name" cannot be negative.',
+  'session_in_session': 'IN SESSION',
+  'session_finish': 'Finish session',
+  'session_finish_title': 'Finish session?',
+  'session_finish_body': 'Your progress will be saved.',
+  'session_confirm': 'Confirm',
+  'session_cancel': 'Cancel',
+  'session_start_title': 'Start @name?',
+  'session_start_body': '@count exercises queued. Once you start, Albert begins the timer and your session duration will be tracked until you finish.',
+  'session_timer_note': 'Time counting starts on confirm.',
+  'session_start_btn': 'Start session',
 
   // ── Profile ───────────────────────────────────────────────────────────────
   'profile_overline': 'PROFILE',
@@ -185,6 +195,16 @@ const Map<String, String> _pt = {
   'workouts_validation_reps':
       'As repetições de "@name" devem ser maiores que 0.',
   'workouts_validation_weight': 'O peso de "@name" não pode ser negativo.',
+  'session_in_session': 'EM SESSÃO',
+  'session_finish': 'Finalizar sessão',
+  'session_finish_title': 'Finalizar sessão?',
+  'session_finish_body': 'Seu progresso será salvo.',
+  'session_confirm': 'Confirmar',
+  'session_cancel': 'Cancelar',
+  'session_start_title': 'Iniciar @name?',
+  'session_start_body': '@count exercícios na fila. Após iniciar, Albert começa o cronômetro e sua sessão será registrada até você finalizar.',
+  'session_timer_note': 'O tempo começa ao confirmar.',
+  'session_start_btn': 'Iniciar sessão',
 
   // ── Profile ───────────────────────────────────────────────────────────────
   'profile_overline': 'PERFIL',

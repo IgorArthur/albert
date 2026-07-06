@@ -13,7 +13,7 @@ class RoutineCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => HomeController.to.onRoutineTap(routine),
+      onTap: () => HomeController.to.onRoutineTap(context, routine),
       child: Container(
         width: 140,
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),

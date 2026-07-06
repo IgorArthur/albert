@@ -2,7 +2,6 @@ import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/hive/files/boxes.dart';
 import 'package:albert/features/workouts/data/hive/exercise.dart';
 import 'package:albert/features/workouts/data/hive/routine.dart';
-import 'package:albert/features/workouts/data/hive/workout_session.dart';
 import 'package:albert/features/workouts/presentation/pages/add_workout_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -268,30 +267,7 @@ class WorkoutsController extends GetxController {
   }
 
   // ─── Session ──────────────────────────────────────────────────────────────
-
-  void startWorkoutSession(Routine routine) {
-    final clonedExercises = routine.exercises
-        .map((e) => Exercise(name: e.name, sets: e.sets, reps: e.reps, kg: e.kg))
-        .toList();
-
-    final session = WorkoutSession(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      routineId: routine.id,
-      routineName: routine.name,
-      startedAt: DateTime.now(),
-      exercises: clonedExercises,
-    );
-
-    boxWorkoutSessions.put(session.id, session);
-
-    Get.snackbar(
-      'workouts_session_title'.tr,
-      'workouts_session_body'.trParams({'name': routine.name}),
-      backgroundColor: AppColors.primary100.withValues(alpha: 0.9),
-      colorText: Colors.white,
-      snackPosition: SnackPosition.BOTTOM,
-    );
-  }
+  // Session lifecycle is now handled by SessionController.
 
   // ─── Load ─────────────────────────────────────────────────────────────────
 

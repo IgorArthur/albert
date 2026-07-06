@@ -13,7 +13,7 @@ class StartWorkoutCard extends StatelessWidget {
 
     return Expanded(
       child: GestureDetector(
-        onTap: controller.startNextWorkout,
+        onTap: () => controller.startNextWorkout(context),
         child: Container(
           height: 150,
           padding: const EdgeInsets.all(20.0),
