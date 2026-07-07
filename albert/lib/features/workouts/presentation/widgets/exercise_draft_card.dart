@@ -65,24 +65,7 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
 
       final isAvailableForPick = isPicking && !isPrimary && !isSecondary && !isPrimaryOfLink;
 
-      // Label shown above the secondary card
-      final primaryIdx = links[idx]; // null when this is not secondary
-      final primaryEx =
-          primaryIdx != null ? ctrl.newRoutineExercises[primaryIdx] : null;
-      final primaryLabel = isSecondary
-          ? ((primaryEx != null && primaryEx.name.trim().isNotEmpty)
-              ? primaryEx.name.trim().toUpperCase()
-              : 'EX ${(primaryIdx! + 1).toString().padLeft(2, '0')}')
-          : '';
 
-      // Label shown above the primary card (symmetric)
-      final secondaryEx =
-          secondaryKey != null ? ctrl.newRoutineExercises[secondaryKey] : null;
-      final secondaryLabel = isPrimaryOfLink
-          ? ((secondaryEx != null && secondaryEx.name.trim().isNotEmpty)
-              ? secondaryEx.name.trim().toUpperCase()
-              : 'EX ${(secondaryKey! + 1).toString().padLeft(2, '0')}')
-          : '';
 
       // ── Link icon tap ────────────────────────────────────────────────────────
       void handleLinkTap() {

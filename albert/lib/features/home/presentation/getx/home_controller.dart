@@ -35,7 +35,7 @@ class HomeController extends GetxController {
   }
 
   void openCoach() {
-    // TODO: navigate to Coach Albert chat
+    // TO-DO: navigate to Coach Albert chat
   }
 
   void onRoutineTap(BuildContext context, Routine routine) {

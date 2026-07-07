@@ -4,7 +4,6 @@ import 'package:albert/features/utils/hive/files/boxes.dart';
 import 'package:albert/features/workouts/data/hive/exercise.dart';
 import 'package:albert/features/workouts/data/hive/routine.dart';
 import 'package:albert/features/workouts/data/hive/workout_session.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
