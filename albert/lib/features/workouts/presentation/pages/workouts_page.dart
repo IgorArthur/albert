@@ -11,6 +11,7 @@ class WorkoutsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = WorkoutsController.to;
+    controller.handlePendingEditSheet(context);
 
     return Scaffold(
       body: SafeArea(

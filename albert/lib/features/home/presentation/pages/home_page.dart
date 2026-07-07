@@ -73,7 +73,7 @@ class HomePage extends StatelessWidget {
                         scrollDirection: Axis.horizontal,
                         physics: const BouncingScrollPhysics(),
                         itemCount: routines.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 16),
+                        separatorBuilder: (_, _) => const SizedBox(width: 16),
                         itemBuilder: (_, index) => RoutineCard(routine: routines[index]),
                       ),
                     ),

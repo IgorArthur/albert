@@ -38,10 +38,18 @@ class ProfileNotificationTile extends StatelessWidget {
           Switch(
             value: value,
             onChanged: enabled ? onChanged : null,
-            activeColor: AppColors.primary100,
-            activeTrackColor: AppColors.primary100.withValues(alpha: 0.3),
-            inactiveThumbColor: AppColors.neutral60,
-            inactiveTrackColor: AppColors.neutral30,
+            thumbColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.selected)) {
+                return AppColors.primary100;
+              }
+              return AppColors.neutral60;
+            }),
+            trackColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.selected)) {
+                return AppColors.primary100.withValues(alpha: 0.3);
+              }
+              return AppColors.neutral30;
+            }),
           ),
         ],
       ),

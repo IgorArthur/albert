@@ -2,7 +2,6 @@ import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/hive/files/boxes.dart';
 import 'package:albert/features/workouts/data/hive/exercise.dart';
 import 'package:albert/features/workouts/data/hive/routine.dart';
-import 'package:albert/features/workouts/data/hive/workout_session.dart';
 import 'package:albert/features/workouts/presentation/pages/add_workout_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,6 +19,17 @@ class WorkoutsController extends GetxController {
 
   // Tracks the id of the routine being edited (null = creating new)
   String? editingRoutineId;
+  
+  // Stores a routine that should be opened in the edit sheet as soon as the Workouts tab mounts
+  Routine? _pendingEditRoutine;
+
+  // ── Biset state ───────────────────────────────────────────────────────────
+
+  /// Index of the card that initiated the biset picking flow (null = not picking).
+  final RxnInt pickingBisetIndex = RxnInt();
+
+  /// Maps secondary-exercise index → primary-exercise index.
+  final RxMap<int, int> bisetLinks = <int, int>{}.obs;
 
   // ─── Getters ──────────────────────────────────────────────────────────────
 
@@ -55,6 +65,20 @@ class WorkoutsController extends GetxController {
       backgroundColor: Colors.transparent,
       builder: (_) => const AddWorkoutSheet(),
     );
+  }
+
+  void setPendingEditRoutine(Routine routine) {
+    _pendingEditRoutine = routine;
+  }
+
+  void handlePendingEditSheet(BuildContext context) {
+    if (_pendingEditRoutine != null) {
+      final routine = _pendingEditRoutine!;
+      _pendingEditRoutine = null;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showEditSheet(context, routine);
+      });
+    }
   }
 
   void showEditSheet(BuildContext context, Routine routine) {
@@ -121,6 +145,7 @@ class WorkoutsController extends GetxController {
     newRoutineExercises.assignAll([
       Exercise(name: '', sets: 3, reps: 10, kg: 0),
     ]);
+    _resetBisetState();
   }
 
   void loadRoutineForEdit(Routine routine) {
@@ -141,7 +166,34 @@ class WorkoutsController extends GetxController {
   void removeExerciseFromDraft(int index) {
     if (newRoutineExercises.length > 1) {
       newRoutineExercises.removeAt(index);
+      _resetBisetState(); // indices shift on removal — safest to reset
     }
+  }
+
+  // ── Biset actions ─────────────────────────────────────────────────────────
+
+  void startPickingBiset(int fromIndex) {
+    pickingBisetIndex.value = fromIndex;
+  }
+
+  void cancelBisetPicking() {
+    pickingBisetIndex.value = null;
+  }
+
+  void linkBiset(int toIndex) {
+    final from = pickingBisetIndex.value;
+    if (from == null || from == toIndex) return;
+    bisetLinks[toIndex] = from;
+    pickingBisetIndex.value = null;
+  }
+
+  void unlinkBiset(int secondaryIndex) {
+    bisetLinks.remove(secondaryIndex);
+  }
+
+  void _resetBisetState() {
+    pickingBisetIndex.value = null;
+    bisetLinks.clear();
   }
 
   void selectIconForDraft(String icon) {
@@ -232,30 +284,7 @@ class WorkoutsController extends GetxController {
   }
 
   // ─── Session ──────────────────────────────────────────────────────────────
-
-  void startWorkoutSession(Routine routine) {
-    final clonedExercises = routine.exercises
-        .map((e) => Exercise(name: e.name, sets: e.sets, reps: e.reps, kg: e.kg))
-        .toList();
-
-    final session = WorkoutSession(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      routineId: routine.id,
-      routineName: routine.name,
-      startedAt: DateTime.now(),
-      exercises: clonedExercises,
-    );
-
-    boxWorkoutSessions.put(session.id, session);
-
-    Get.snackbar(
-      'workouts_session_title'.tr,
-      'workouts_session_body'.trParams({'name': routine.name}),
-      backgroundColor: AppColors.primary100.withValues(alpha: 0.9),
-      colorText: Colors.white,
-      snackPosition: SnackPosition.BOTTOM,
-    );
-  }
+  // Session lifecycle is now handled by SessionController.
 
   // ─── Load ─────────────────────────────────────────────────────────────────
 

@@ -8,9 +8,13 @@ class LayoutScaffold extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
   void _onDestinationSelected(BuildContext context, int index) {
-    navigationShell.goBranch(index);
 
-    // TO-DO: implement navigation
+    navigationShell.goBranch(
+      index,
+      // Always reset the Workouts branch to its root (routines list).
+      // For other tabs, only reset when re-tapping the already-active tab.
+      initialLocation: index == 1 || index == navigationShell.currentIndex,
+    );
   }
 
   @override

@@ -2,13 +2,14 @@ import 'package:albert/features/home/presentation/pages/home_page.dart';
 import 'package:albert/features/workouts/workouts.dart';
 import 'package:albert/features/profile/profile.dart';
 import 'package:albert/features/utils/go_router/files/layout_scaffold.dart';
+import 'package:albert/features/workouts/presentation/pages/session_page.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
-final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 final router = GoRouter(
-  navigatorKey: _rootNavigatorKey,
+  navigatorKey: rootNavigatorKey,
   initialLocation: Routes.homePage,
   routes: [
     StatefulShellRoute.indexedStack(
@@ -41,6 +42,11 @@ final router = GoRouter(
         ),
       ],
     ),
+    // Full-screen session route — outside the shell (no bottom nav bar)
+    GoRoute(
+      path: Routes.sessionPage,
+      builder: (context, state) => const SessionPage(),
+    ),
   ],
 );
 
@@ -49,4 +55,5 @@ class Routes {
   static const String homePage = '/';
   static const String workoutsPage = '/workouts';
   static const String profilePage = '/profile';
+  static const String sessionPage = '/session';
 }

@@ -1,6 +1,7 @@
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:albert/features/workouts/presentation/getx/workouts_controller.dart';
+import 'package:albert/features/workouts/presentation/widgets/dashed_border_painter.dart';
 import 'package:albert/features/workouts/presentation/widgets/exercise_draft_card.dart';
 import 'package:albert/features/workouts/presentation/widgets/routine_icon_selector.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,11 @@ class AddWorkoutSheet extends StatelessWidget {
     final controller = WorkoutsController.to;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
-    return Container(
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.88,
+      ),
+      child: Container(
       decoration: const BoxDecoration(
         color: AppColors.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -105,17 +110,209 @@ class AddWorkoutSheet extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  // Exercise cards
-                  Obx(() => Column(
-                        children: List.generate(
-                          controller.newRoutineExercises.length,
-                          (index) => ExerciseDraftCard(
-                            index: index,
-                            exercise: controller.newRoutineExercises[index],
+                  const SizedBox(height: 8),
+                  // ── Biset banner (dashed, reactive) ──────────────────────
+                  Obx(() {
+                    final isPicking =
+                        controller.pickingBisetIndex.value != null;
+                    final borderColor = isPicking
+                        ? AppColors.primary100
+                        : AppColors.neutral30;
+                    final bgColor = isPicking
+                        ? AppColors.primary100.withValues(alpha: 0.08)
+                        : Colors.transparent;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        CustomPaint(
+                          painter: DashedBorderPainter(
+                            color: borderColor,
+                            radius: 12,
+                            strokeWidth: 1.2,
+                            dashLength: 5,
+                            gapLength: 4,
+                          ),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: bgColor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.link_rounded,
+                                  color: isPicking
+                                      ? AppColors.primary100
+                                      : AppColors.neutral60,
+                                  size: 15,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: isPicking
+                                      ? Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: const [
+                                            Text(
+                                              'Pick the pair',
+                                              style: TextStyle(
+                                                fontFamily: 'Montserrat',
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: AppColors.primary100,
+                                              ),
+                                            ),
+                                            SizedBox(height: 2),
+                                            Text(
+                                              'Tap any dashed exercise below to link it as a biset.',
+                                              style: TextStyle(
+                                                fontFamily: 'Montserrat',
+                                                fontSize: 10,
+                                                color: AppColors.neutral60,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : const Text(
+                                          'Tap the link icon on a card to pair exercises as a biset.',
+                                          style: TextStyle(
+                                            fontFamily: 'Montserrat',
+                                            fontSize: 11,
+                                            color: AppColors.neutral60,
+                                          ),
+                                        ),
+                                ),
+                                if (isPicking) ...
+                                  [
+                                    const SizedBox(width: 10),
+                                    GestureDetector(
+                                      onTap: controller.cancelBisetPicking,
+                                      child: const Text(
+                                        'Cancel',
+                                        style: TextStyle(
+                                          fontFamily: 'Montserrat',
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.primary100,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                              ],
+                            ),
                           ),
                         ),
-                      )),
+                        const SizedBox(height: 12),
+                      ],
+                    );
+                  }),
+                  // Exercise cards — biset pairs grouped in a grey dashed wrapper
+                  Obx(() {
+                    final exercises = controller.newRoutineExercises;
+                    final links = controller.bisetLinks;
+
+                    // Build a set of secondary indices so we can skip them
+                    // (they will be rendered inside their primary's group).
+                    final secondaryIndices = links.keys.toSet();
+
+                    // Map secondary → primary for quick lookup
+                    // links: { secondaryIdx: primaryIdx }
+                    // We also need primary → secondary.
+                    final primaryToSecondary = <int, int>{
+                      for (final e in links.entries) e.value: e.key,
+                    };
+
+                    final widgets = <Widget>[];
+
+                    for (var i = 0; i < exercises.length; i++) {
+                      if (secondaryIndices.contains(i)) continue; // handled inside group
+
+                      final secondaryIdx = primaryToSecondary[i];
+                      final isPaired = secondaryIdx != null &&
+                          secondaryIdx < exercises.length;
+
+                      if (isPaired) {
+                        // ── Biset group wrapper ──────────────────────────────
+                        widgets.add(
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: CustomPaint(
+                              painter: DashedBorderPainter(
+                                color: Colors.grey.shade600,
+                                radius: 20,
+                                strokeWidth: 1.2,
+                                dashLength: 6,
+                                gapLength: 4,
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.withValues(alpha: 0.04),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                padding: const EdgeInsets.all(10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    // BISET label at the top of the group
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 4, bottom: 8),
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.link_rounded,
+                                            size: 12,
+                                            color: AppColors.primary100,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          const Text(
+                                            'BISET',
+                                            style: TextStyle(
+                                              fontFamily: 'Montserrat',
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                              letterSpacing: 1.4,
+                                              color: AppColors.primary100,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    // Primary card
+                                    ExerciseDraftCard(
+                                      index: i,
+                                      exercise: exercises[i],
+                                      isGrouped: true,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    // Secondary card
+                                    ExerciseDraftCard(
+                                      index: secondaryIdx,
+                                      exercise: exercises[secondaryIdx],
+                                      isGrouped: true,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      } else {
+                        // ── Regular (unpaired) card ──────────────────────────
+                        widgets.add(
+                          ExerciseDraftCard(
+                            index: i,
+                            exercise: exercises[i],
+                          ),
+                        );
+                      }
+                    }
+
+                    return Column(children: widgets);
+                  }),
                 ],
               ),
             ),
@@ -142,6 +339,7 @@ class AddWorkoutSheet extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 }
