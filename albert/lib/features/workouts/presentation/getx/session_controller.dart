@@ -154,6 +154,23 @@ class SessionController extends GetxController {
     context.pop();
   }
 
+  void cancelSession(BuildContext context) {
+    _timer?.cancel();
+    _timer = null;
+
+    final session = activeSession.value;
+    if (session != null) {
+      // Remove it from the database since it's cancelled
+      boxWorkoutSessions.delete(session.id);
+    }
+
+    activeSession.value = null;
+    completedIndices.clear();
+    elapsedSeconds.value = 0;
+
+    context.pop();
+  }
+
   @override
   void onClose() {
     _timer?.cancel();

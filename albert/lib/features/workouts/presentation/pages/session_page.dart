@@ -15,7 +15,13 @@ class SessionPage extends StatelessWidget {
       // Intercept hardware/gesture back — show finish dialog instead of popping.
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) ctrl.showFinishConfirmation(context);
+        if (!didPop) {
+          if (ctrl.completedCount == 0) {
+            ctrl.cancelSession(context);
+          } else {
+            ctrl.showFinishConfirmation(context);
+          }
+        }
       },
       child: Scaffold(
         backgroundColor: AppColors.background,
@@ -31,15 +37,11 @@ class SessionPage extends StatelessWidget {
               SafeArea(
                 bottom: false,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 8, 16, 0),
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                   child: Row(
                     children: [
-                      // Back (triggers finish dialog)
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back_rounded,
-                            color: Colors.white),
-                        onPressed: () => ctrl.showFinishConfirmation(context),
-                      ),
+                      // Empty spacer to balance the counter on the right
+                      const SizedBox(width: 40),
                       // Centre: IN SESSION + routine name
                       Expanded(
                         child: Column(
@@ -47,38 +49,27 @@ class SessionPage extends StatelessWidget {
                             Text('session_in_session'.tr)
                                 .overline(color: AppColors.primary100),
                             const SizedBox(height: 2),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  session.routineName,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: 'Montserrat',
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              session.routineName,
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'Montserrat',
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      // Right: timer + counter
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            ctrl.elapsedFormatted,
-                            style: const TextStyle(
-                              color: AppColors.primary100,
-                              fontFamily: 'Montserrat',
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
+                      // Right: counter
+                      SizedBox(
+                        width: 40,
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
                             '${ctrl.completedCount}/${ctrl.totalExercises}',
                             style: const TextStyle(
                               color: AppColors.neutral60,
@@ -87,7 +78,7 @@ class SessionPage extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
@@ -214,30 +205,85 @@ class SessionPage extends StatelessWidget {
                 ),
               ),
 
-              // ── Finish session button ─────────────────────────────────────
+              // ── Timer & Finish session button ────────────────────────────
               SafeArea(
                 top: false,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(32, 12, 32, 16),
-                  child: GestureDetector(
-                    onTap: () => ctrl.showFinishConfirmation(context),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            AppColors.primaryGradientStart,
-                            AppColors.primary100,
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                  child: Column(
+                    children: [
+                      // Timer with box and icon
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceLight,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppColors.neutral30, width: 0.5),
                         ),
-                        borderRadius: BorderRadius.circular(50),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.timer_outlined, color: AppColors.primary100, size: 18),
+                            const SizedBox(width: 8),
+                            Text(
+                              ctrl.elapsedFormatted,
+                              style: const TextStyle(
+                                color: AppColors.primary100,
+                                fontFamily: 'Montserrat',
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      alignment: Alignment.center,
-                      child:
-                          Text('session_finish'.tr).body2Bold(color: Colors.white),
-                    ),
+                      const SizedBox(height: 16),
+                      // Button
+                      GestureDetector(
+                        onTap: () {
+                          if (ctrl.completedCount == 0) {
+                            ctrl.cancelSession(context);
+                          } else {
+                            ctrl.showFinishConfirmation(context);
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          decoration: ctrl.completedCount == 0
+                              ? BoxDecoration(
+                                  color: Colors.transparent,
+                                  border: Border.all(
+                                      color: AppColors.error100, width: 1.5),
+                                  borderRadius: BorderRadius.circular(50),
+                                )
+                              : BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      AppColors.primaryGradientStart,
+                                      AppColors.primary100,
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            ctrl.completedCount == 0
+                                ? 'Quit session'
+                                : 'session_finish'.tr,
+                            style: TextStyle(
+                              color: ctrl.completedCount == 0
+                                  ? AppColors.error100
+                                  : Colors.white,
+                              fontFamily: 'Montserrat',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
