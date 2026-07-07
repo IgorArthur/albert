@@ -39,7 +39,11 @@ class HomeController extends GetxController {
   }
 
   void onRoutineTap(BuildContext context, Routine routine) {
-    SessionController.to.showStartConfirmation(context, routine);
+    // Navigate to the Workouts tab first.
+    // The WorkoutsController will pick up the pending routine and open the sheet
+    // once the branch is successfully mounted, avoiding GoRouter race conditions.
+    WorkoutsController.to.setPendingEditRoutine(routine);
+    context.go(Routes.workoutsPage);
   }
 
   void seeAllRoutines(BuildContext context) {

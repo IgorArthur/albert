@@ -15,7 +15,11 @@ class AddWorkoutSheet extends StatelessWidget {
     final controller = WorkoutsController.to;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
-    return Container(
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.88,
+      ),
+      child: Container(
       decoration: const BoxDecoration(
         color: AppColors.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -335,6 +339,7 @@ class AddWorkoutSheet extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 }

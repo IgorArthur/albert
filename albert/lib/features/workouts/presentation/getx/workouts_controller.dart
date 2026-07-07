@@ -19,6 +19,9 @@ class WorkoutsController extends GetxController {
 
   // Tracks the id of the routine being edited (null = creating new)
   String? editingRoutineId;
+  
+  // Stores a routine that should be opened in the edit sheet as soon as the Workouts tab mounts
+  Routine? _pendingEditRoutine;
 
   // ── Biset state ───────────────────────────────────────────────────────────
 
@@ -62,6 +65,20 @@ class WorkoutsController extends GetxController {
       backgroundColor: Colors.transparent,
       builder: (_) => const AddWorkoutSheet(),
     );
+  }
+
+  void setPendingEditRoutine(Routine routine) {
+    _pendingEditRoutine = routine;
+  }
+
+  void handlePendingEditSheet(BuildContext context) {
+    if (_pendingEditRoutine != null) {
+      final routine = _pendingEditRoutine!;
+      _pendingEditRoutine = null;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showEditSheet(context, routine);
+      });
+    }
   }
 
   void showEditSheet(BuildContext context, Routine routine) {
