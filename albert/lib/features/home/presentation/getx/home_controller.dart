@@ -1,4 +1,5 @@
 import 'package:albert/features/utils/go_router/files/routes.dart';
+import 'package:albert/features/progress/presentation/getx/progress_controller.dart';
 import 'package:albert/features/workouts/data/hive/routine.dart';
 import 'package:albert/features/workouts/presentation/getx/session_controller.dart';
 import 'package:albert/features/workouts/presentation/getx/workouts_controller.dart';
@@ -11,13 +12,13 @@ class HomeController extends GetxController {
 
   // ─── State ────────────────────────────────────────────────────────────────
 
-  final int level = 1;
-  final int currentXp = 0;
-  final int maxXp = 250;
-  final int streakDays = 0;
-  final int sessionsLogged = 0;
-
   // ─── Getters ──────────────────────────────────────────────────────────────
+
+  int get level => ProgressController.to.level.value;
+  int get currentXp => ProgressController.to.currentXp.value;
+  int get maxXp => ProgressController.to.xpToNextLevel.value + currentXp;
+  int get streakDays => ProgressController.to.streakDays.value;
+  int get sessionsLogged => ProgressController.to.totalSessions.value;
 
   String get nextWorkoutName =>
       WorkoutsController.to.routines.isNotEmpty

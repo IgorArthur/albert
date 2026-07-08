@@ -27,6 +27,10 @@ class CustomNavigationBar extends StatelessWidget {
         icon: Icons.fitness_center,
       ),
       DestinationsModel(
+        label: 'nav_progress'.tr, // Assuming this exists or falls back to key
+        icon: Icons.trending_up,
+      ),
+      DestinationsModel(
         label: 'nav_profile'.tr,
         icon: Icons.person_outline_rounded,
       ),

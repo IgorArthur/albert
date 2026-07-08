@@ -10,11 +10,12 @@ class LevelCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = HomeController.to;
-    final xpFraction = controller.maxXp > 0
-        ? (controller.currentXp / controller.maxXp).clamp(0.0, 1.0)
-        : 0.0;
+    return Obx(() {
+      final xpFraction = controller.maxXp > 0
+          ? (controller.currentXp / controller.maxXp).clamp(0.0, 1.0)
+          : 0.0;
 
-    return Container(
+      return Container(
       padding: const EdgeInsets.all(24.0),
       decoration: BoxDecoration(
         color: AppColors.surfaceCard,
@@ -97,5 +98,6 @@ class LevelCard extends StatelessWidget {
         ],
       ),
     );
+    });
   }
 }
