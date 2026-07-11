@@ -3,10 +3,18 @@ import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/hive/files/hive_utils.dart';
 import 'package:albert/features/utils/l10n/app_translations.dart';
 import 'package:albert/features/utils/utils.dart';
+import 'package:albert/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await GoogleSignIn.instance.initialize();
+
   await initHiveAndBoxes();
   registerGetxControllers();
 
@@ -30,9 +38,7 @@ class MyApp extends StatelessWidget {
         locale: ProfileController.to.currentLocale,
         fallbackLocale: const Locale('en', 'US'),
         // ── Theme ───────────────────────────────────────────────────────────
-        theme: ThemeData(
-          scaffoldBackgroundColor: AppColors.background,
-        ),
+        theme: ThemeData(scaffoldBackgroundColor: AppColors.background),
         // ── Router (GoRouter delegates) ──────────────────────────────────────
         routeInformationProvider: router.routeInformationProvider,
         routeInformationParser: router.routeInformationParser,

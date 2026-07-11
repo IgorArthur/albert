@@ -77,7 +77,7 @@ class LoginPage extends StatelessWidget {
 
               // "Continue with Google" Button
               ElevatedButton(
-                onPressed: () => controller.continueWithGoogle(context),
+                onPressed: () => controller.continueWithGoogle(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.neutral100,
                   foregroundColor: Colors.black,
@@ -132,7 +132,7 @@ class LoginPage extends StatelessWidget {
 
               // "Continue without login" Button
               OutlinedButton(
-                onPressed: () => controller.continueWithoutLogin(context),
+                onPressed: () => controller.continueWithoutLogin(),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.neutral100,
                   side: const BorderSide(color: AppColors.neutral30, width: 1.5),

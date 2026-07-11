@@ -1,21 +1,48 @@
 import 'package:albert/features/utils/go_router/files/routes.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:go_router/go_router.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginController extends GetxController {
   static LoginController get to => Get.find();
 
   // ─── Actions ──────────────────────────────────────────────────────────────
 
-  void continueWithGoogle(BuildContext context) {
+  void continueWithGoogle() async {
     debugPrint('Google Sign-In pressed');
-    // For now, bypass login and navigate to Home page
-    context.go(Routes.homePage);
+    try {
+      // 1. Trigger the native Google Sign-In flow.
+      final googleUser = await GoogleSignIn.instance.authenticate();
+
+      // 2. Obtain the auth details (synchronous in v7.0.0+).
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+
+      // 3. Create a new credential using only the ID token.
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+      );
+
+      // 4. Sign in to Firebase with the Google credentials.
+      final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      debugPrint('User logged in with Google: ${userCredential.user?.displayName}');
+
+      // 5. Navigate to the Home page using the global router.
+      router.go(Routes.homePage);
+    } catch (e) {
+      debugPrint('Error during Google Sign-In: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to sign in with Google. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
+        colorText: Colors.white,
+      );
+    }
   }
 
-  void continueWithoutLogin(BuildContext context) {
+  void continueWithoutLogin() {
     debugPrint('Continue without login pressed');
-    context.go(Routes.homePage);
+    router.go(Routes.homePage);
   }
 }
