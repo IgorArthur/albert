@@ -2,6 +2,7 @@ import 'package:albert/features/home/presentation/pages/home_page.dart';
 import 'package:albert/features/workouts/workouts.dart';
 import 'package:albert/features/profile/profile.dart';
 import 'package:albert/features/progress/progress.dart';
+import 'package:albert/features/login/login.dart';
 import 'package:albert/features/utils/go_router/files/layout_scaffold.dart';
 import 'package:albert/features/workouts/presentation/pages/session_page.dart';
 import 'package:flutter/widgets.dart';
@@ -11,7 +12,7 @@ final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 final router = GoRouter(
   navigatorKey: rootNavigatorKey,
-  initialLocation: Routes.homePage,
+  initialLocation: Routes.loginPage,
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) =>
@@ -57,6 +58,11 @@ final router = GoRouter(
       path: Routes.sessionPage,
       builder: (context, state) => const SessionPage(),
     ),
+    // Login route — outside the shell
+    GoRoute(
+      path: Routes.loginPage,
+      builder: (context, state) => const LoginPage(),
+    ),
   ],
 );
 
@@ -67,4 +73,5 @@ class Routes {
   static const String profilePage = '/profile';
   static const String progressPage = '/progress';
   static const String sessionPage = '/session';
+  static const String loginPage = '/login';
 }
