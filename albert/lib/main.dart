@@ -1,20 +1,19 @@
 import 'package:albert/features/profile/presentation/getx/profile_controller.dart';
 import 'package:albert/features/utils/colors/app_colors.dart';
+import 'package:albert/features/utils/firebase/files/firebase_utils.dart';
 import 'package:albert/features/utils/hive/files/hive_utils.dart';
 import 'package:albert/features/utils/l10n/app_translations.dart';
 import 'package:albert/features/utils/utils.dart';
-import 'package:albert/firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await GoogleSignIn.instance.initialize();
-
+  await dotenv.load(fileName: ".env");
+  
+  await initFirebase();
   await initHiveAndBoxes();
   registerGetxControllers();
 
