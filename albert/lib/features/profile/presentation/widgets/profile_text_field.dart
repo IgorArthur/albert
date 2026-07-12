@@ -10,23 +10,25 @@ class ProfileTextField extends StatelessWidget {
     required this.controller,
     this.hint = '',
     this.keyboardType = TextInputType.text,
+    this.enabled = true,
   });
 
   final String label;
   final TextEditingController controller;
   final String hint;
   final TextInputType keyboardType;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label).body2Bold(color: AppColors.neutral100),
+        Text(label).body2Bold(color: enabled ? AppColors.neutral100 : AppColors.neutral60),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.surfaceLight,
+            color: enabled ? AppColors.surfaceLight : AppColors.neutral0,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: AppColors.neutral30, width: 0.5),
           ),
@@ -34,7 +36,11 @@ class ProfileTextField extends StatelessWidget {
           child: TextField(
             controller: controller,
             keyboardType: keyboardType,
-            style: const TextStyle(color: AppColors.neutral100, fontSize: 15),
+            enabled: enabled,
+            style: TextStyle(
+              color: enabled ? AppColors.neutral100 : AppColors.neutral60,
+              fontSize: 15,
+            ),
             decoration: InputDecoration(
               border: InputBorder.none,
               hintText: hint,

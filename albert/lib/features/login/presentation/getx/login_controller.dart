@@ -34,6 +34,7 @@ class LoginController extends GetxController {
           'email': user.email,
           'displayName': user.displayName,
           'photoURL': user.photoURL,
+          'birthday': DateTime(1998, 10, 24).toIso8601String(),
         });
         if (Get.isRegistered<ProfileController>()) {
           ProfileController.to.loadUserFromStorage();

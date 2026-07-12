@@ -26,9 +26,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      // Subscribe to textSize and language so the whole tree rebuilds on change.
+      // Subscribe to textSize, language, and theme so the whole tree rebuilds on change.
       ProfileController.to.textSize.value;
       ProfileController.to.language.value;
+      ProfileController.to.appTheme.value;
 
       return GetMaterialApp.router(
         debugShowCheckedModeBanner: false,
@@ -38,10 +39,16 @@ class MyApp extends StatelessWidget {
         fallbackLocale: const Locale('en', 'US'),
         // ── Theme ───────────────────────────────────────────────────────────
         theme: ThemeData(
+          brightness: Brightness.light,
+          scaffoldBackgroundColor: Colors.white,
+          canvasColor: Colors.white,
+        ),
+        darkTheme: ThemeData(
           brightness: Brightness.dark,
           scaffoldBackgroundColor: AppColors.background,
           canvasColor: AppColors.background,
         ),
+        themeMode: ProfileController.to.currentThemeMode,
         // ── Router (GoRouter delegates) ──────────────────────────────────────
         routeInformationProvider: router.routeInformationProvider,
         routeInformationParser: router.routeInformationParser,

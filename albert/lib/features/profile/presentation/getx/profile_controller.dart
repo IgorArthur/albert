@@ -12,12 +12,13 @@ class ProfileController extends GetxController {
 
   // ─── Avatar & Profile ─────────────────────────────────────────────────────
 
-  final List<String> avatarOptions = ['💪', '🔥', '🏆', '🥇', '⚡', '🧠', '💥', '🐺'];
+  final List<String> avatarOptions = ['💪', '🔥', '🏋️', '🥇', '⚡', '🧠', '🦾', '🐺', '👽'];
 
   final RxString selectedAvatar = '💪'.obs;
   final RxString displayName = 'Athlete'.obs;
   final RxString email = ''.obs;
   final RxString photoUrl = ''.obs;
+  final RxBool isEditingProfile = false.obs;
 
   late final TextEditingController nameController;
   late final TextEditingController emailController;
@@ -26,9 +27,11 @@ class ProfileController extends GetxController {
 
   final RxDouble heightCm = 180.0.obs;
   final RxDouble weightKg = 75.0.obs;
+  final Rxn<DateTime> dateOfBirth = Rxn<DateTime>();
 
   late final TextEditingController heightController;
   late final TextEditingController weightController;
+  late final TextEditingController birthdayController;
 
   // ─── Units ────────────────────────────────────────────────────────────────
 
@@ -41,6 +44,44 @@ class ProfileController extends GetxController {
   String get weightLabel =>
       isMetric.value ? 'profile_weight_kg'.tr : 'profile_weight_lb'.tr;
   String get weightUnitDisplay => isMetric.value ? 'KG' : 'LB';
+
+  String get formattedBirthday {
+    if (dateOfBirth.value == null) return '';
+    final d = dateOfBirth.value!.toLocal();
+    return '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
+  }
+
+  int? get age {
+    if (dateOfBirth.value == null) return null;
+    final today = DateTime.now();
+    final d = dateOfBirth.value!.toLocal();
+    int age = today.year - d.year;
+    if (today.month < d.month ||
+        (today.month == d.month && today.day < d.day)) {
+      age--;
+    }
+    return age;
+  }
+
+  final RxString appTheme = 'Dark'.obs;
+
+  ThemeMode get currentThemeMode {
+    switch (appTheme.value) {
+      case 'Light':
+        return ThemeMode.light;
+      case 'Dark':
+        return ThemeMode.dark;
+      case 'System':
+      default:
+        return ThemeMode.system;
+    }
+  }
+
+  void setAppTheme(String theme) {
+    appTheme.value = theme;
+    boxAuth.put('appTheme', theme);
+    Get.changeThemeMode(currentThemeMode);
+  }
 
   // ─── Notifications ────────────────────────────────────────────────────────
 
@@ -95,18 +136,49 @@ class ProfileController extends GetxController {
     emailController = TextEditingController(text: email.value);
     heightController = TextEditingController(text: heightCm.value.toInt().toString());
     weightController = TextEditingController(text: weightKg.value.toInt().toString());
+    birthdayController = TextEditingController();
     loadUserFromStorage();
   }
 
   void loadUserFromStorage() {
     final user = boxAuth.get('user');
-    if (user != null && user is Map) {
+    final isLoggedIn = user != null && user is Map;
+    if (isLoggedIn) {
       displayName.value = user['displayName'] ?? 'Athlete';
       email.value = user['email'] ?? '';
       photoUrl.value = user['photoURL'] ?? '';
       nameController.text = displayName.value;
       emailController.text = email.value;
     }
+
+    heightCm.value = boxAuth.get('height') ?? 180.0;
+    weightKg.value = boxAuth.get('weight') ?? 75.0;
+    heightController.text = heightCm.value.toInt().toString();
+    weightController.text = weightKg.value.toInt().toString();
+
+    String? savedBirthday;
+    if (isLoggedIn) {
+      if (user['birthday'] != null) {
+        savedBirthday = user['birthday'];
+      } else {
+        savedBirthday = DateTime(1998, 10, 24).toIso8601String();
+        final updatedUser = Map<String, dynamic>.from(user);
+        updatedUser['birthday'] = savedBirthday;
+        boxAuth.put('user', updatedUser);
+      }
+    } else {
+      savedBirthday = boxAuth.get('birthday');
+    }
+
+    if (savedBirthday != null) {
+      dateOfBirth.value = DateTime.tryParse(savedBirthday);
+      birthdayController.text = formattedBirthday;
+    } else {
+      dateOfBirth.value = null;
+      birthdayController.text = '';
+    }
+
+    appTheme.value = boxAuth.get('appTheme') ?? 'Dark';
   }
 
   @override
@@ -115,6 +187,7 @@ class ProfileController extends GetxController {
     emailController.dispose();
     heightController.dispose();
     weightController.dispose();
+    birthdayController.dispose();
     super.onClose();
   }
 
@@ -133,10 +206,27 @@ class ProfileController extends GetxController {
 
   void toggleUnit(bool metric) => isMetric.value = metric;
 
-  void saveProfile() {
+  void saveProfile() async {
     displayName.value = nameController.text.trim().isEmpty
         ? 'profile_name_hint'.tr
         : nameController.text.trim();
+    
+    // Save to Hive auth box as well so it persists
+    final user = boxAuth.get('user');
+    if (user != null && user is Map) {
+      final updatedUser = Map<String, dynamic>.from(user);
+      updatedUser['displayName'] = displayName.value;
+      await boxAuth.put('user', updatedUser);
+    } else {
+      // In guest mode, save guest details
+      await boxAuth.put('user', {
+        'displayName': displayName.value,
+        'email': '',
+      });
+    }
+
+    isEditingProfile.value = false;
+    
     Get.snackbar(
       'profile_saved_title'.tr,
       'profile_saved_body'.tr,
@@ -153,14 +243,65 @@ class ProfileController extends GetxController {
     );
   }
 
-  void saveBodyStats() {
+  void saveBodyInfo() async {
     heightCm.value = double.tryParse(heightController.text) ?? heightCm.value;
     weightKg.value = double.tryParse(weightController.text) ?? weightKg.value;
+    
+    await boxAuth.put('height', heightCm.value);
+    await boxAuth.put('weight', weightKg.value);
+
+    final user = boxAuth.get('user');
+    final isLoggedIn = user != null && user is Map;
+
+    if (dateOfBirth.value != null) {
+      if (isLoggedIn) {
+        final updatedUser = Map<String, dynamic>.from(user);
+        updatedUser['birthday'] = dateOfBirth.value!.toIso8601String();
+        await boxAuth.put('user', updatedUser);
+      } else {
+        await boxAuth.put('birthday', dateOfBirth.value!.toIso8601String());
+      }
+    } else {
+      if (isLoggedIn) {
+        final updatedUser = Map<String, dynamic>.from(user);
+        updatedUser.remove('birthday');
+        await boxAuth.put('user', updatedUser);
+      } else {
+        await boxAuth.delete('birthday');
+      }
+    }
+    
     Get.snackbar(
       'profile_body_saved_title'.tr,
       'profile_body_saved_body'.tr,
       snackPosition: SnackPosition.BOTTOM,
     );
+  }
+
+  Future<void> selectBirthday(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: dateOfBirth.value ?? DateTime(2000),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: AppColors.primary100,
+              onPrimary: Colors.white,
+              surface: AppColors.surfaceCard,
+              onSurface: Colors.white,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      dateOfBirth.value = picked;
+      birthdayController.text = formattedBirthday;
+    }
   }
 
   void confirmReset(BuildContext context) {
@@ -198,22 +339,32 @@ class ProfileController extends GetxController {
   }
 
   void resetSettings() {
-    selectedAvatar.value = '💪';
-    displayName.value = 'profile_name_hint'.tr;
-    email.value = '';
-    photoUrl.value = '';
-    nameController.text = displayName.value;
-    emailController.text = '';
-    heightCm.value = 180;
-    weightKg.value = 75;
-    heightController.text = '180';
-    weightController.text = '75';
     isMetric.value = true;
     workoutReminders.value = true;
     streakAlerts.value = true;
     albertTips.value = false;
+    appTheme.value = 'Dark';
     setTextSize(TextSize.normal);
     setLanguage('en');
+
+    // Save resets to Hive
+    boxAuth.put('appTheme', 'Dark');
+    boxAuth.delete('height');
+    boxAuth.delete('weight');
+    heightCm.value = 180;
+    weightKg.value = 75;
+    heightController.text = '180';
+    weightController.text = '75';
+
+    final user = boxAuth.get('user');
+    final isLoggedIn = user != null && user is Map;
+    if (!isLoggedIn) {
+      // In Guest mode, we can also reset local birthday
+      boxAuth.delete('birthday');
+      dateOfBirth.value = null;
+      birthdayController.text = '';
+    }
+
     Get.snackbar(
       'profile_reset_done_title'.tr,
       'profile_reset_done_body'.tr,
