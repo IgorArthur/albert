@@ -2,6 +2,8 @@ import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:albert/features/utils/hive/files/boxes.dart';
 import 'package:albert/features/utils/go_router/files/routes.dart';
+import 'package:albert/features/profile/domain/models/user_profile.dart';
+import 'package:albert/features/profile/domain/repositories/profile_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
@@ -140,40 +142,33 @@ class ProfileController extends GetxController {
     loadUserFromStorage();
   }
 
-  void loadUserFromStorage() {
-    final user = boxAuth.get('user');
-    final isLoggedIn = user != null && user is Map;
-    if (isLoggedIn) {
-      displayName.value = user['displayName'] ?? 'Athlete';
-      email.value = user['email'] ?? '';
-      photoUrl.value = user['photoURL'] ?? '';
-      nameController.text = displayName.value;
-      emailController.text = email.value;
-    }
-
-    heightCm.value = boxAuth.get('height') ?? 180.0;
-    weightKg.value = boxAuth.get('weight') ?? 75.0;
-    heightController.text = heightCm.value.toInt().toString();
-    weightController.text = weightKg.value.toInt().toString();
-
-    String? savedBirthday;
-    if (isLoggedIn) {
-      if (user['birthday'] != null) {
-        savedBirthday = user['birthday'];
-      } else {
-        savedBirthday = DateTime(1998, 10, 24).toIso8601String();
-        final updatedUser = Map<String, dynamic>.from(user);
-        updatedUser['birthday'] = savedBirthday;
-        boxAuth.put('user', updatedUser);
-      }
-    } else {
-      savedBirthday = boxAuth.get('birthday');
-    }
-
-    if (savedBirthday != null) {
-      dateOfBirth.value = DateTime.tryParse(savedBirthday);
+  void loadUserFromStorage() async {
+    final profile = await Get.find<ProfileRepository>().getProfile();
+    if (profile != null) {
+      displayName.value = profile.displayName;
+      email.value = profile.email;
+      photoUrl.value = profile.photoUrl;
+      selectedAvatar.value = profile.avatar;
+      nameController.text = profile.displayName;
+      emailController.text = profile.email;
+      heightCm.value = profile.heightCm;
+      weightKg.value = profile.weightKg;
+      heightController.text = profile.heightCm.toInt().toString();
+      weightController.text = profile.weightKg.toInt().toString();
+      dateOfBirth.value = profile.dateOfBirth;
       birthdayController.text = formattedBirthday;
     } else {
+      // In Guest Mode default state
+      displayName.value = 'Athlete';
+      email.value = '';
+      photoUrl.value = '';
+      selectedAvatar.value = '💪';
+      nameController.text = 'Athlete';
+      emailController.text = '';
+      heightCm.value = 180.0;
+      weightKg.value = 75.0;
+      heightController.text = '180';
+      weightController.text = '75';
       dateOfBirth.value = null;
       birthdayController.text = '';
     }
@@ -193,15 +188,22 @@ class ProfileController extends GetxController {
 
   // ─── Actions ──────────────────────────────────────────────────────────────
 
-  void selectAvatar(String avatar) {
+  void selectAvatar(String avatar) async {
     selectedAvatar.value = avatar;
     photoUrl.value = '';
-    final user = boxAuth.get('user');
-    if (user != null && user is Map) {
-      final updatedUser = Map<String, dynamic>.from(user);
-      updatedUser['photoURL'] = '';
-      boxAuth.put('user', updatedUser);
-    }
+    
+    // Save state back through repository
+    final current = UserProfile(
+      uid: email.value.isNotEmpty ? (boxAuth.get('user')?['uid'] ?? '') : '',
+      email: email.value,
+      displayName: displayName.value,
+      photoUrl: '',
+      avatar: avatar,
+      heightCm: heightCm.value,
+      weightKg: weightKg.value,
+      dateOfBirth: dateOfBirth.value,
+    );
+    await Get.find<ProfileRepository>().saveProfile(current);
   }
 
   void toggleUnit(bool metric) => isMetric.value = metric;
@@ -211,19 +213,17 @@ class ProfileController extends GetxController {
         ? 'profile_name_hint'.tr
         : nameController.text.trim();
     
-    // Save to Hive auth box as well so it persists
-    final user = boxAuth.get('user');
-    if (user != null && user is Map) {
-      final updatedUser = Map<String, dynamic>.from(user);
-      updatedUser['displayName'] = displayName.value;
-      await boxAuth.put('user', updatedUser);
-    } else {
-      // In guest mode, save guest details
-      await boxAuth.put('user', {
-        'displayName': displayName.value,
-        'email': '',
-      });
-    }
+    final current = UserProfile(
+      uid: email.value.isNotEmpty ? (boxAuth.get('user')?['uid'] ?? '') : '',
+      email: email.value,
+      displayName: displayName.value,
+      photoUrl: photoUrl.value,
+      avatar: selectedAvatar.value,
+      heightCm: heightCm.value,
+      weightKg: weightKg.value,
+      dateOfBirth: dateOfBirth.value,
+    );
+    await Get.find<ProfileRepository>().saveProfile(current);
 
     isEditingProfile.value = false;
     
@@ -247,29 +247,17 @@ class ProfileController extends GetxController {
     heightCm.value = double.tryParse(heightController.text) ?? heightCm.value;
     weightKg.value = double.tryParse(weightController.text) ?? weightKg.value;
     
-    await boxAuth.put('height', heightCm.value);
-    await boxAuth.put('weight', weightKg.value);
-
-    final user = boxAuth.get('user');
-    final isLoggedIn = user != null && user is Map;
-
-    if (dateOfBirth.value != null) {
-      if (isLoggedIn) {
-        final updatedUser = Map<String, dynamic>.from(user);
-        updatedUser['birthday'] = dateOfBirth.value!.toIso8601String();
-        await boxAuth.put('user', updatedUser);
-      } else {
-        await boxAuth.put('birthday', dateOfBirth.value!.toIso8601String());
-      }
-    } else {
-      if (isLoggedIn) {
-        final updatedUser = Map<String, dynamic>.from(user);
-        updatedUser.remove('birthday');
-        await boxAuth.put('user', updatedUser);
-      } else {
-        await boxAuth.delete('birthday');
-      }
-    }
+    final current = UserProfile(
+      uid: email.value.isNotEmpty ? (boxAuth.get('user')?['uid'] ?? '') : '',
+      email: email.value,
+      displayName: displayName.value,
+      photoUrl: photoUrl.value,
+      avatar: selectedAvatar.value,
+      heightCm: heightCm.value,
+      weightKg: weightKg.value,
+      dateOfBirth: dateOfBirth.value,
+    );
+    await Get.find<ProfileRepository>().saveProfile(current);
     
     Get.snackbar(
       'profile_body_saved_title'.tr,
@@ -338,7 +326,7 @@ class ProfileController extends GetxController {
     );
   }
 
-  void resetSettings() {
+  void resetSettings() async {
     isMetric.value = true;
     workoutReminders.value = true;
     streakAlerts.value = true;
@@ -348,21 +336,43 @@ class ProfileController extends GetxController {
     setLanguage('en');
 
     // Save resets to Hive
-    boxAuth.put('appTheme', 'Dark');
-    boxAuth.delete('height');
-    boxAuth.delete('weight');
-    heightCm.value = 180;
-    weightKg.value = 75;
-    heightController.text = '180';
-    weightController.text = '75';
+    await boxAuth.put('appTheme', 'Dark');
 
     final user = boxAuth.get('user');
     final isLoggedIn = user != null && user is Map;
     if (!isLoggedIn) {
-      // In Guest mode, we can also reset local birthday
-      boxAuth.delete('birthday');
+      // In Guest mode, reset everything
+      await Get.find<ProfileRepository>().clearProfile();
+      displayName.value = 'Athlete';
+      email.value = '';
+      photoUrl.value = '';
+      selectedAvatar.value = '💪';
+      nameController.text = 'Athlete';
+      emailController.text = '';
+      heightCm.value = 180.0;
+      weightKg.value = 75.0;
+      heightController.text = '180';
+      weightController.text = '75';
       dateOfBirth.value = null;
       birthdayController.text = '';
+    } else {
+      // In Google logged-in mode, reset only local height and weight
+      heightCm.value = 180.0;
+      weightKg.value = 75.0;
+      heightController.text = '180';
+      weightController.text = '75';
+      
+      final current = UserProfile(
+        uid: user['uid'] ?? '',
+        email: user['email'] ?? '',
+        displayName: user['displayName'] ?? 'Athlete',
+        photoUrl: user['photoURL'] ?? '',
+        avatar: selectedAvatar.value,
+        heightCm: 180.0,
+        weightKg: 75.0,
+        dateOfBirth: dateOfBirth.value,
+      );
+      await Get.find<ProfileRepository>().saveProfile(current);
     }
 
     Get.snackbar(
@@ -374,12 +384,15 @@ class ProfileController extends GetxController {
 
   void signOut() async {
     try {
-      await boxAuth.delete('user');
+      await Get.find<ProfileRepository>().clearProfile();
       await FirebaseAuth.instance.signOut();
       await GoogleSignIn.instance.signOut();
       displayName.value = 'Athlete';
       email.value = '';
       photoUrl.value = '';
+      selectedAvatar.value = '💪';
+      dateOfBirth.value = null;
+      birthdayController.text = '';
     } catch (e) {
       debugPrint('Error during sign out: $e');
     }
