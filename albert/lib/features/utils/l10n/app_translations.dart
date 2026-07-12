@@ -84,6 +84,8 @@ const Map<String, String> _en = {
   'session_start_btn': 'Start session',
 
   // ── Profile ───────────────────────────────────────────────────────────────
+  'profile_tab_account': 'Account',
+  'profile_tab_settings': 'Settings',
   'profile_overline': 'PROFILE',
   'profile_title': 'Your account',
   'profile_subtitle': 'Tune Albert to fit you.',
@@ -133,7 +135,7 @@ const Map<String, String> _en = {
   'profile_reset_cancel': 'Cancel',
   'profile_reset_done_title': 'Settings reset',
   'profile_reset_done_body': 'All settings have been restored to defaults.',
-  'profile_sign_out': 'Sign out (coming soon)',
+  'profile_sign_out': 'Sign out',
   // Level / streak labels (used in profile summary card)
   'profile_level_label': 'Lvl @level',
   'profile_streak_label': '@days d streak',
@@ -221,6 +223,8 @@ const Map<String, String> _pt = {
   'session_start_btn': 'Iniciar sessão',
 
   // ── Profile ───────────────────────────────────────────────────────────────
+  'profile_tab_account': 'Conta',
+  'profile_tab_settings': 'Configurações',
   'profile_overline': 'PERFIL',
   'profile_title': 'Sua conta',
   'profile_subtitle': 'Personalize o Albert para você.',
@@ -271,7 +275,7 @@ const Map<String, String> _pt = {
   'profile_reset_cancel': 'Cancelar',
   'profile_reset_done_title': 'Configurações redefinidas',
   'profile_reset_done_body': 'Todas as configurações foram restauradas.',
-  'profile_sign_out': 'Sair (em breve)',
+  'profile_sign_out': 'Sair',
   // Level / streak labels
   'profile_level_label': 'Nív @level',
   'profile_streak_label': '@days d sequência',

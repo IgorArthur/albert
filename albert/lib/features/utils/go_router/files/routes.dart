@@ -8,15 +8,33 @@ import 'package:albert/features/workouts/presentation/pages/session_page.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:albert/features/utils/hive/files/boxes.dart';
+
 final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 final router = GoRouter(
   navigatorKey: rootNavigatorKey,
-  initialLocation: Routes.loginPage,
+  initialLocation: boxAuth.get('user') != null ? Routes.homePage : Routes.loginPage,
   routes: [
     StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) =>
-          LayoutScaffold(navigationShell: navigationShell),
+      pageBuilder: (context, state, navigationShell) => CustomTransitionPage(
+        key: state.pageKey,
+        child: LayoutScaffold(navigationShell: navigationShell),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          final scaleAnimation = Tween<double>(begin: 0.96, end: 1.0).animate(
+            CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+          );
+          final fadeAnimation = CurvedAnimation(parent: animation, curve: Curves.easeIn);
+          return FadeTransition(
+            opacity: fadeAnimation,
+            child: ScaleTransition(
+              scale: scaleAnimation,
+              child: child,
+            ),
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 400),
+      ),
       branches: [
         StatefulShellBranch(
           routes: [
@@ -61,7 +79,9 @@ final router = GoRouter(
     // Login route — outside the shell
     GoRoute(
       path: Routes.loginPage,
-      builder: (context, state) => const LoginPage(),
+      pageBuilder: (context, state) => const NoTransitionPage(
+        child: LoginPage(),
+      ),
     ),
   ],
 );

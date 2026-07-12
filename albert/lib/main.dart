@@ -37,7 +37,11 @@ class MyApp extends StatelessWidget {
         locale: ProfileController.to.currentLocale,
         fallbackLocale: const Locale('en', 'US'),
         // ── Theme ───────────────────────────────────────────────────────────
-        theme: ThemeData(scaffoldBackgroundColor: AppColors.background),
+        theme: ThemeData(
+          brightness: Brightness.dark,
+          scaffoldBackgroundColor: AppColors.background,
+          canvasColor: AppColors.background,
+        ),
         // ── Router (GoRouter delegates) ──────────────────────────────────────
         routeInformationProvider: router.routeInformationProvider,
         routeInformationParser: router.routeInformationParser,

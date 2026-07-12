@@ -1,4 +1,6 @@
 import 'package:albert/features/utils/go_router/files/routes.dart';
+import 'package:albert/features/utils/hive/files/boxes.dart';
+import 'package:albert/features/profile/presentation/getx/profile_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -25,7 +27,19 @@ class LoginController extends GetxController {
 
       // 4. Sign in to Firebase with the Google credentials.
       final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-      debugPrint('User logged in with Google: ${userCredential.user?.displayName}');
+      final user = userCredential.user;
+      if (user != null) {
+        await boxAuth.put('user', {
+          'uid': user.uid,
+          'email': user.email,
+          'displayName': user.displayName,
+          'photoURL': user.photoURL,
+        });
+        if (Get.isRegistered<ProfileController>()) {
+          ProfileController.to.loadUserFromStorage();
+        }
+      }
+      debugPrint('User logged in with Google: ${user?.displayName}');
 
       // 5. Navigate to the Home page using the global router.
       router.go(Routes.homePage);

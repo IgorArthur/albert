@@ -12,8 +12,15 @@ import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  int _activeTab = 0; // 0: Account, 1: Settings
 
   @override
   Widget build(BuildContext context) {
@@ -39,188 +46,284 @@ class ProfilePage extends StatelessWidget {
 
               // ── Summary Card ─────────────────────────────────────────────
               const ProfileSummaryCard(),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
-              // ── Edit Profile ─────────────────────────────────────────────
-              ProfileSectionCard(
-                icon: Icons.person_outline_rounded,
-                title: 'profile_edit_profile'.tr,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    ProfileTextField(
-                      label: 'profile_name'.tr,
-                      controller: c.nameController,
-                      hint: 'profile_name_hint'.tr,
-                    ),
-                    const SizedBox(height: 20),
-                    Text('profile_avatar'.tr).body2Bold(color: AppColors.neutral100),
-                    const SizedBox(height: 12),
-                    const ProfileAvatarPicker(),
-                    const SizedBox(height: 20),
-                    _PrimaryButton(
-                      label: 'profile_save_profile'.tr,
-                      onTap: c.saveProfile,
-                    ),
-                  ],
+              // ── Custom Sliding Tab Bar ───────────────────────────────────
+              _buildTabBar(),
+
+              // ── Tab Contents ─────────────────────────────────────────────
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                switchInCurve: Curves.easeIn,
+                switchOutCurve: Curves.easeOut,
+                child: _activeTab == 0
+                    ? _buildAccountTab(c, context)
+                    : _buildSettingsTab(c, context),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTabBar() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.neutral30, width: 1),
+      ),
+      padding: const EdgeInsets.all(6),
+      child: Row(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => setState(() => _activeTab = 0),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: _activeTab == 0 ? AppColors.primary100 : AppColors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  'profile_tab_account'.tr,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: _activeTab == 0 ? Colors.white : AppColors.neutral60,
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
-
-              // ── Account ──────────────────────────────────────────────────
-              ProfileSectionCard(
-                icon: Icons.email_outlined,
-                title: 'profile_account'.tr,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    ProfileTextField(
-                      label: 'profile_email'.tr,
-                      controller: c.emailController,
-                      hint: 'profile_email_hint'.tr,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    const SizedBox(height: 16),
-                    _SecondaryButton(
-                      icon: Icons.save_outlined,
-                      label: 'profile_save_email'.tr,
-                      onTap: c.saveEmail,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'profile_local_data'.tr,
-                    ).caption(color: AppColors.neutral60),
-                  ],
+            ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => setState(() => _activeTab = 1),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: _activeTab == 1 ? AppColors.primary100 : AppColors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  'profile_tab_settings'.tr,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: _activeTab == 1 ? Colors.white : AppColors.neutral60,
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-              // ── Body Stats ───────────────────────────────────────────────
-              ProfileSectionCard(
-                icon: Icons.straighten_rounded,
-                title: 'profile_body_stats'.tr,
-                child: Obx(() => Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+  Widget _buildAccountTab(ProfileController c, BuildContext context) {
+    return Column(
+      key: const ValueKey<int>(0),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Edit Profile ─────────────────────────────────────────────
+        ProfileSectionCard(
+          icon: Icons.person_outline_rounded,
+          title: 'profile_edit_profile'.tr,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ProfileTextField(
+                label: 'profile_name'.tr,
+                controller: c.nameController,
+                hint: 'profile_name_hint'.tr,
+              ),
+              const SizedBox(height: 20),
+              Text('profile_avatar'.tr).body2Bold(color: AppColors.neutral100),
+              const SizedBox(height: 12),
+              const ProfileAvatarPicker(),
+              const SizedBox(height: 20),
+              _PrimaryButton(
+                label: 'profile_save_profile'.tr,
+                onTap: c.saveProfile,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // ── Account ──────────────────────────────────────────────────
+        ProfileSectionCard(
+          icon: Icons.email_outlined,
+          title: 'profile_account'.tr,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ProfileTextField(
+                label: 'profile_email'.tr,
+                controller: c.emailController,
+                hint: 'profile_email_hint'.tr,
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 16),
+              _SecondaryButton(
+                icon: Icons.save_outlined,
+                label: 'profile_save_email'.tr,
+                onTap: c.saveEmail,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'profile_local_data'.tr,
+              ).caption(color: AppColors.neutral60),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // ── Body Stats ───────────────────────────────────────────────
+        ProfileSectionCard(
+          icon: Icons.straighten_rounded,
+          title: 'profile_body_stats'.tr,
+          child: Obx(() => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: ProfileTextField(
+                      label: c.heightLabel,
+                      controller: c.heightController,
+                      hint: '180',
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ProfileTextField(
+                      label: c.weightLabel,
+                      controller: c.weightController,
+                      hint: '75',
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _SecondaryButton(
+                icon: Icons.save_outlined,
+                label: 'profile_save_body'.tr,
+                onTap: c.saveBodyStats,
+              ),
+            ],
+          )),
+        ),
+        const SizedBox(height: 16),
+
+        // ── Reset & Sign Out ─────────────────────────────────────────
+        ProfileSectionCard(
+          icon: Icons.restart_alt_rounded,
+          title: 'profile_reset'.tr,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _SecondaryButton(
+                icon: Icons.replay_rounded,
+                label: 'profile_reset_settings'.tr,
+                onTap: () => c.confirmReset(context),
+              ),
+              const SizedBox(height: 16),
+              GestureDetector(
+                onTap: c.signOut,
+                behavior: HitTestBehavior.opaque,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ProfileTextField(
-                            label: c.heightLabel,
-                            controller: c.heightController,
-                            hint: '180',
-                            keyboardType: TextInputType.number,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: ProfileTextField(
-                            label: c.weightLabel,
-                            controller: c.weightController,
-                            hint: '75',
-                            keyboardType: TextInputType.number,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    _SecondaryButton(
-                      icon: Icons.save_outlined,
-                      label: 'profile_save_body'.tr,
-                      onTap: c.saveBodyStats,
-                    ),
-                  ],
-                )),
-              ),
-              const SizedBox(height: 16),
-
-              // ── Units ────────────────────────────────────────────────────
-              ProfileSectionCard(
-                icon: Icons.balance_rounded,
-                title: 'profile_units'.tr,
-                child: const ProfileUnitToggle(),
-              ),
-              const SizedBox(height: 16),
-
-              // ── Font Size ────────────────────────────────────────────────
-              ProfileSectionCard(
-                icon: Icons.text_fields_rounded,
-                title: 'profile_text_size'.tr,
-                child: const ProfileFontSizePicker(),
-              ),
-              const SizedBox(height: 16),
-
-              // ── Language ─────────────────────────────────────────────────
-              ProfileSectionCard(
-                icon: Icons.language_rounded,
-                title: 'profile_language'.tr,
-                child: const ProfileLanguageSelector(),
-              ),
-              const SizedBox(height: 16),
-
-              // ── Notifications ────────────────────────────────────────────
-              ProfileSectionCard(
-                icon: Icons.notifications_outlined,
-                title: 'profile_notifications'.tr,
-                child: Obx(() => Column(
-                      children: [
-                        ProfileNotificationTile(
-                          title: 'profile_workout_reminders'.tr,
-                          subtitle: 'profile_workout_reminders_sub'.tr,
-                          value: c.workoutReminders.value,
-                          onChanged: (v) => c.workoutReminders.value = v,
-                          enabled: false,
-                        ),
-                        const SizedBox(height: 16),
-                        ProfileNotificationTile(
-                          title: 'profile_streak_alerts'.tr,
-                          subtitle: 'profile_streak_alerts_sub'.tr,
-                          value: c.streakAlerts.value,
-                          onChanged: (v) => c.streakAlerts.value = v,
-                          enabled: false,
-                        ),
-                        const SizedBox(height: 16),
-                        ProfileNotificationTile(
-                          title: 'profile_albert_tips'.tr,
-                          subtitle: 'profile_albert_tips_sub'.tr,
-                          value: c.albertTips.value,
-                          onChanged: (v) => c.albertTips.value = v,
-                          enabled: false,
-                        ),
-                      ],
-                    )),
-              ),
-              const SizedBox(height: 16),
-
-              // ── Reset ────────────────────────────────────────────────────
-              ProfileSectionCard(
-                icon: Icons.restart_alt_rounded,
-                title: 'profile_reset'.tr,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _SecondaryButton(
-                      icon: Icons.replay_rounded,
-                      label: 'profile_reset_settings'.tr,
-                      onTap: () => c.confirmReset(context),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.logout_rounded,
-                            color: AppColors.neutral60, size: 16),
-                        const SizedBox(width: 8),
-                        Text('profile_sign_out'.tr).caption(color: AppColors.neutral60),
-                      ],
-                    ),
+                    const Icon(Icons.logout_rounded,
+                        color: AppColors.neutral60, size: 16),
+                    const SizedBox(width: 8),
+                    Text('profile_sign_out'.tr).caption(color: AppColors.neutral60),
                   ],
                 ),
               ),
             ],
           ),
         ),
-      ),
+      ],
+    );
+  }
+
+  Widget _buildSettingsTab(ProfileController c, BuildContext context) {
+    return Column(
+      key: const ValueKey<int>(1),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Units ────────────────────────────────────────────────────
+        ProfileSectionCard(
+          icon: Icons.balance_rounded,
+          title: 'profile_units'.tr,
+          child: const ProfileUnitToggle(),
+        ),
+        const SizedBox(height: 16),
+
+        // ── Font Size ────────────────────────────────────────────────
+        ProfileSectionCard(
+          icon: Icons.text_fields_rounded,
+          title: 'profile_text_size'.tr,
+          child: const ProfileFontSizePicker(),
+        ),
+        const SizedBox(height: 16),
+
+        // ── Language ─────────────────────────────────────────────────
+        ProfileSectionCard(
+          icon: Icons.language_rounded,
+          title: 'profile_language'.tr,
+          child: const ProfileLanguageSelector(),
+        ),
+        const SizedBox(height: 16),
+
+        // ── Notifications ────────────────────────────────────────────
+        ProfileSectionCard(
+          icon: Icons.notifications_outlined,
+          title: 'profile_notifications'.tr,
+          child: Obx(() => Column(
+                children: [
+                  ProfileNotificationTile(
+                    title: 'profile_workout_reminders'.tr,
+                    subtitle: 'profile_workout_reminders_sub'.tr,
+                    value: c.workoutReminders.value,
+                    onChanged: (v) => c.workoutReminders.value = v,
+                    enabled: false,
+                  ),
+                  const SizedBox(height: 16),
+                  ProfileNotificationTile(
+                    title: 'profile_streak_alerts'.tr,
+                    subtitle: 'profile_streak_alerts_sub'.tr,
+                    value: c.streakAlerts.value,
+                    onChanged: (v) => c.streakAlerts.value = v,
+                    enabled: false,
+                  ),
+                  const SizedBox(height: 16),
+                  ProfileNotificationTile(
+                    title: 'profile_albert_tips'.tr,
+                    subtitle: 'profile_albert_tips_sub'.tr,
+                    value: c.albertTips.value,
+                    onChanged: (v) => c.albertTips.value = v,
+                    enabled: false,
+                  ),
+                ],
+              )),
+        ),
+      ],
     );
   }
 }

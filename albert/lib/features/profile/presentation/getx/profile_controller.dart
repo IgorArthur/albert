@@ -1,5 +1,9 @@
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
+import 'package:albert/features/utils/hive/files/boxes.dart';
+import 'package:albert/features/utils/go_router/files/routes.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -13,6 +17,7 @@ class ProfileController extends GetxController {
   final RxString selectedAvatar = '💪'.obs;
   final RxString displayName = 'Athlete'.obs;
   final RxString email = ''.obs;
+  final RxString photoUrl = ''.obs;
 
   late final TextEditingController nameController;
   late final TextEditingController emailController;
@@ -90,6 +95,18 @@ class ProfileController extends GetxController {
     emailController = TextEditingController(text: email.value);
     heightController = TextEditingController(text: heightCm.value.toInt().toString());
     weightController = TextEditingController(text: weightKg.value.toInt().toString());
+    loadUserFromStorage();
+  }
+
+  void loadUserFromStorage() {
+    final user = boxAuth.get('user');
+    if (user != null && user is Map) {
+      displayName.value = user['displayName'] ?? 'Athlete';
+      email.value = user['email'] ?? '';
+      photoUrl.value = user['photoURL'] ?? '';
+      nameController.text = displayName.value;
+      emailController.text = email.value;
+    }
   }
 
   @override
@@ -103,7 +120,16 @@ class ProfileController extends GetxController {
 
   // ─── Actions ──────────────────────────────────────────────────────────────
 
-  void selectAvatar(String avatar) => selectedAvatar.value = avatar;
+  void selectAvatar(String avatar) {
+    selectedAvatar.value = avatar;
+    photoUrl.value = '';
+    final user = boxAuth.get('user');
+    if (user != null && user is Map) {
+      final updatedUser = Map<String, dynamic>.from(user);
+      updatedUser['photoURL'] = '';
+      boxAuth.put('user', updatedUser);
+    }
+  }
 
   void toggleUnit(bool metric) => isMetric.value = metric;
 
@@ -175,6 +201,7 @@ class ProfileController extends GetxController {
     selectedAvatar.value = '💪';
     displayName.value = 'profile_name_hint'.tr;
     email.value = '';
+    photoUrl.value = '';
     nameController.text = displayName.value;
     emailController.text = '';
     heightCm.value = 180;
@@ -192,5 +219,20 @@ class ProfileController extends GetxController {
       'profile_reset_done_body'.tr,
       snackPosition: SnackPosition.BOTTOM,
     );
+  }
+
+  void signOut() async {
+    try {
+      await boxAuth.delete('user');
+      await FirebaseAuth.instance.signOut();
+      await GoogleSignIn.instance.signOut();
+      displayName.value = 'Athlete';
+      email.value = '';
+      photoUrl.value = '';
+    } catch (e) {
+      debugPrint('Error during sign out: $e');
+    }
+    // Navigate back to the Login page.
+    router.go(Routes.loginPage);
   }
 }

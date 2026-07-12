@@ -20,4 +20,5 @@ Future<void> _openHiveBoxes() async {
   boxExercises = await Hive.openBox<Exercise>('exerciseBox');
   boxRoutines = await Hive.openBox<Routine>('routineBox');
   boxWorkoutSessions = await Hive.openBox<WorkoutSession>('workoutSessionBox');
+  boxAuth = await Hive.openBox('authBox');
 }
