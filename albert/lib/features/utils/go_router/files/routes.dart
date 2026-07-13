@@ -1,6 +1,7 @@
 import 'package:albert/features/home/presentation/pages/home_page.dart';
 import 'package:albert/features/workouts/workouts.dart';
 import 'package:albert/features/profile/profile.dart';
+import 'package:albert/features/progress/progress.dart';
 import 'package:albert/features/utils/go_router/files/layout_scaffold.dart';
 import 'package:albert/features/workouts/presentation/pages/session_page.dart';
 import 'package:flutter/widgets.dart';
@@ -32,6 +33,15 @@ final router = GoRouter(
             ),
           ],
         ),
+
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.progressPage,
+              builder: (context, state) => const ProgressPage(),
+            ),
+          ],
+        ),
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -55,5 +65,6 @@ class Routes {
   static const String homePage = '/';
   static const String workoutsPage = '/workouts';
   static const String profilePage = '/profile';
+  static const String progressPage = '/progress';
   static const String sessionPage = '/session';
 }
