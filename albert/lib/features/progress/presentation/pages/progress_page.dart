@@ -35,10 +35,10 @@ class _ProgressPageState extends State<ProgressPage> {
                 delegate: SliverChildListDelegate([
                   const SizedBox(height: 24),
                   // Header
-                  Text('STATS').overline(color: AppColors.primary100),
-                  Text('Progress').display(color: Colors.white),
+                  Text('progress_overline'.tr).overline(color: AppColors.primary100),
+                  Text('progress_title'.tr).display(color: Colors.white),
                   const SizedBox(height: 4),
-                  Text('Your training, tracked.').body2(color: AppColors.neutral60),
+                  Text('progress_subtitle'.tr).body2(color: AppColors.neutral60),
                   const SizedBox(height: 24),
                   
                   // Lifter Level Card
@@ -82,7 +82,7 @@ class _ProgressPageState extends State<ProgressPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('LIFTER LEVEL', style: TextStyle(
+                              Text('progress_lifter_level'.tr, style: TextStyle(
                                 color: AppColors.background.withValues(alpha: 0.7),
                                 fontFamily: 'Montserrat',
                                 fontSize: 11,
@@ -111,8 +111,11 @@ class _ProgressPageState extends State<ProgressPage> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              Obx(() => Text(
-                                '${controller.xpToNextLevel.value} XP to level ${controller.level.value + 1}',
+                               Obx(() => Text(
+                                'progress_xp_to_next'.trParams({
+                                  'xp': '${controller.xpToNextLevel.value}',
+                                  'level': '${controller.level.value + 1}',
+                                }),
                                 style: TextStyle(
                                   color: AppColors.background.withValues(alpha: 0.8),
                                   fontFamily: 'Montserrat',
@@ -135,7 +138,7 @@ class _ProgressPageState extends State<ProgressPage> {
                         child: Obx(() => _StatCard(
                           icon: Icons.local_fire_department_outlined,
                           value: '${controller.streakDays.value} d',
-                          label: 'STREAK',
+                          label: 'progress_streak_label'.tr,
                         )),
                       ),
                       const SizedBox(width: 16),
@@ -143,7 +146,7 @@ class _ProgressPageState extends State<ProgressPage> {
                         child: Obx(() => _StatCard(
                           icon: Icons.calendar_today_outlined,
                           value: '${controller.totalSessions.value}',
-                          label: 'SESSIONS',
+                          label: 'progress_sessions_label'.tr,
                         )),
                       ),
                     ],
@@ -155,7 +158,7 @@ class _ProgressPageState extends State<ProgressPage> {
                         child: Obx(() => _StatCard(
                           icon: Icons.fitness_center,
                           value: '${controller.totalSets.value}',
-                          label: 'TOTAL SETS',
+                          label: 'progress_total_sets_label'.tr,
                         )),
                       ),
                       const SizedBox(width: 16),
@@ -163,7 +166,7 @@ class _ProgressPageState extends State<ProgressPage> {
                         child: Obx(() => _StatCard(
                           icon: Icons.emoji_events_outlined,
                           value: '${controller.totalVolume.value}',
-                          label: 'VOLUME (KG)',
+                          label: 'progress_volume_label'.tr,
                         )),
                       ),
                     ],
@@ -181,9 +184,9 @@ class _ProgressPageState extends State<ProgressPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Last 14 days',
-                          style: TextStyle(
+                        Text(
+                          'progress_last_14_days'.tr,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontFamily: 'Montserrat',
                             fontSize: 18,
@@ -191,9 +194,9 @@ class _ProgressPageState extends State<ProgressPage> {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
-                          'Sets by day',
-                          style: TextStyle(
+                        Text(
+                          'progress_sets_by_day'.tr,
+                          style: const TextStyle(
                             color: AppColors.neutral60,
                             fontFamily: 'Montserrat',
                             fontSize: 13,
@@ -220,9 +223,9 @@ class _ProgressPageState extends State<ProgressPage> {
                   const SizedBox(height: 32),
                   
                   // All Sessions Header
-                  const Text(
-                    'All sessions',
-                    style: TextStyle(
+                  Text(
+                    'progress_all_sessions'.tr,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontFamily: 'Montserrat',
                       fontSize: 20,
@@ -241,7 +244,7 @@ class _ProgressPageState extends State<ProgressPage> {
                 child: Center(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 20, bottom: 40),
-                    child: Text('More details coming soon...', style: TextStyle(color: AppColors.neutral60)),
+                    child: Text('progress_coming_soon'.tr, style: const TextStyle(color: AppColors.neutral60)),
                   ),
                 ),
               ),
