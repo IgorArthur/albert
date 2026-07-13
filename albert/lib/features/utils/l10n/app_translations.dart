@@ -35,6 +35,7 @@ const Map<String, String> _en = {
   // ── Navigation Bar ────────────────────────────────────────────────────────
   'nav_home': 'Home',
   'nav_workouts': 'Workouts',
+  'nav_progress': 'Progress',
   'nav_profile': 'Profile',
 
   // ── Workouts ──────────────────────────────────────────────────────────────
@@ -72,6 +73,22 @@ const Map<String, String> _en = {
   'workouts_validation_sets': 'Sets for "@name" must be greater than 0.',
   'workouts_validation_reps': 'Reps for "@name" must be greater than 0.',
   'workouts_validation_weight': 'Weight for "@name" cannot be negative.',
+  // ── Progress ──────────────────────────────────────────────────────────────
+  'progress_overline': 'STATS',
+  'progress_title': 'Progress',
+  'progress_subtitle': 'Your training, tracked.',
+  'progress_lifter_level': 'LIFTER LEVEL',
+  'progress_xp': '@xp XP',
+  'progress_xp_to_next': '@xp XP to level @level',
+  'progress_streak_label': 'STREAK',
+  'progress_sessions_label': 'SESSIONS',
+  'progress_total_sets_label': 'TOTAL SETS',
+  'progress_volume_label': 'VOLUME (KG)',
+  'progress_last_14_days': 'Last 14 days',
+  'progress_sets_by_day': 'Sets by day',
+  'progress_all_sessions': 'All sessions',
+  'progress_coming_soon': 'More details coming soon...',
+
   'session_in_session': 'IN SESSION',
   'session_finish': 'Finish session',
   'session_finish_title': 'Finish session?',
@@ -170,6 +187,7 @@ const Map<String, String> _pt = {
   // ── Navigation Bar ────────────────────────────────────────────────────────
   'nav_home': 'Início',
   'nav_workouts': 'Treinos',
+  'nav_progress': 'Progresso',
   'nav_profile': 'Perfil',
 
   // ── Workouts ──────────────────────────────────────────────────────────────
@@ -211,6 +229,22 @@ const Map<String, String> _pt = {
   'workouts_validation_reps':
       'As repetições de "@name" devem ser maiores que 0.',
   'workouts_validation_weight': 'O peso de "@name" não pode ser negativo.',
+  // ── Progress ──────────────────────────────────────────────────────────────
+  'progress_overline': 'ESTATÍSTICAS',
+  'progress_title': 'Progresso',
+  'progress_subtitle': 'Seu treino, registrado.',
+  'progress_lifter_level': 'NÍVEL DO ATLETA',
+  'progress_xp': '@xp XP',
+  'progress_xp_to_next': '@xp XP para o nível @level',
+  'progress_streak_label': 'SEQUÊNCIA',
+  'progress_sessions_label': 'SESSÕES',
+  'progress_total_sets_label': 'TOTAL DE SÉRIES',
+  'progress_volume_label': 'VOLUME (KG)',
+  'progress_last_14_days': 'Últimos 14 dias',
+  'progress_sets_by_day': 'Séries por dia',
+  'progress_all_sessions': 'Todas as sessões',
+  'progress_coming_soon': 'Mais detalhes em breve...',
+
   'session_in_session': 'EM SESSÃO',
   'session_finish': 'Finalizar sessão',
   'session_finish_title': 'Finalizar sessão?',
