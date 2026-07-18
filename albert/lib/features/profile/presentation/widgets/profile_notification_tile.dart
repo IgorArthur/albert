@@ -29,7 +29,7 @@ class ProfileNotificationTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title).body2Bold(color: AppColors.neutral100),
+                Text(title).body2Bold(),
                 const SizedBox(height: 2),
                 Text(subtitle).caption(color: AppColors.neutral60),
               ],
@@ -48,7 +48,9 @@ class ProfileNotificationTile extends StatelessWidget {
               if (states.contains(WidgetState.selected)) {
                 return AppColors.primary100.withValues(alpha: 0.3);
               }
-              return AppColors.neutral30;
+              return Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.neutral30
+                  : Colors.black.withValues(alpha: 0.12);
             }),
           ),
         ],

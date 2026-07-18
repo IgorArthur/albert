@@ -21,16 +21,20 @@ class ProfileTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label).body2Bold(color: enabled ? AppColors.neutral100 : AppColors.neutral60),
+        Text(label).body2Bold(color: enabled ? (isDark ? Colors.white : Colors.black) : AppColors.neutral60),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: enabled ? AppColors.surfaceLight : AppColors.neutral0,
+            color: isDark
+                ? (enabled ? AppColors.surfaceLight : AppColors.neutral0)
+                : (enabled ? Colors.white : const Color(0xFFE5E5EA)),
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.neutral30, width: 0.5),
+            border: Border.all(color: Theme.of(context).dividerColor, width: 0.5),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
           child: TextField(
@@ -38,7 +42,7 @@ class ProfileTextField extends StatelessWidget {
             keyboardType: keyboardType,
             enabled: enabled,
             style: TextStyle(
-              color: enabled ? AppColors.neutral100 : AppColors.neutral60,
+              color: enabled ? (isDark ? Colors.white : Colors.black) : AppColors.neutral60,
               fontSize: 15,
             ),
             decoration: InputDecoration(

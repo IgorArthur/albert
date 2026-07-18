@@ -26,10 +26,16 @@ class ProfileAvatarPicker extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isSelected
                     ? AppColors.primary100.withValues(alpha: 0.15)
-                    : AppColors.surfaceLight,
+                    : (Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.surfaceLight
+                        : Theme.of(context).cardColor),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? AppColors.primary100 : Colors.transparent,
+                  color: isSelected
+                      ? AppColors.primary100
+                      : (Theme.of(context).brightness == Brightness.dark
+                          ? Colors.transparent
+                          : Theme.of(context).dividerColor),
                   width: 2,
                 ),
               ),

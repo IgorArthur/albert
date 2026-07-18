@@ -24,24 +24,23 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final c = ProfileController.to;
+    final topPadding = MediaQuery.of(context).padding.top;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.fromLTRB(20, 24, 20, bottomPadding + 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ── Page Header ──────────────────────────────────────────────
-              Text('profile_overline'.tr).overline(color: AppColors.primary100),
-              const SizedBox(height: 4),
-              Text('profile_title'.tr).display(color: AppColors.neutral100),
-              const SizedBox(height: 4),
-              Text('profile_subtitle'.tr).body1(color: AppColors.neutral60),
-              const SizedBox(height: 24),
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(20.0, topPadding + 24.0, 20.0, bottomPadding + 24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Page Header ──────────────────────────────────────────────
+            Text('profile_overline'.tr).overline(color: AppColors.primary100),
+            const SizedBox(height: 6),
+            Text('profile_title'.tr).display(),
+            const SizedBox(height: 6),
+            Text('profile_subtitle'.tr).body1(color: AppColors.neutral60),
+            const SizedBox(height: 32),
 
               // ── Summary Card ─────────────────────────────────────────────
               const ProfileSummaryCard(),
@@ -64,17 +63,16 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildTabBar() {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.neutral30, width: 1),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 1),
       ),
       padding: const EdgeInsets.all(6),
       child: Row(
@@ -90,14 +88,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   color: _activeTab == 0 ? AppColors.primary100 : AppColors.transparent,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Text(
+                child: Text(
                   'Body',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Montserrat',
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
-                    color: Colors.white,
+                    color: _activeTab == 0
+                        ? Colors.white
+                        : (Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.neutral60
+                            : Colors.black54),
                   ),
                 ),
               ),
@@ -114,14 +116,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   color: _activeTab == 1 ? AppColors.primary100 : AppColors.transparent,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Text(
+                child: Text(
                   'Account',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Montserrat',
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
-                    color: Colors.white,
+                    color: _activeTab == 1
+                        ? Colors.white
+                        : (Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.neutral60
+                            : Colors.black54),
                   ),
                 ),
               ),
@@ -138,14 +144,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   color: _activeTab == 2 ? AppColors.primary100 : AppColors.transparent,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Text(
+                child: Text(
                   'Settings',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Montserrat',
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
-                    color: Colors.white,
+                    color: _activeTab == 2
+                        ? Colors.white
+                        : (Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.neutral60
+                            : Colors.black54),
                   ),
                 ),
               ),
@@ -204,15 +214,19 @@ class _ProfilePageState extends State<ProfilePage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Date of birth').body2Bold(color: AppColors.neutral100),
+                  Text('Date of birth').body2Bold(
+                    color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                  ),
                   const SizedBox(height: 8),
                   GestureDetector(
                     onTap: () => c.selectBirthday(context),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceLight,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.surfaceLight
+                            : Colors.white,
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: AppColors.neutral30, width: 0.5),
+                        border: Border.all(color: Theme.of(context).dividerColor, width: 0.5),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                       child: Row(
@@ -224,7 +238,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               hasBirthday ? c.formattedBirthday : 'dd/mm/aaaa',
                               style: TextStyle(
                                 color: hasBirthday
-                                    ? AppColors.neutral100
+                                    ? (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black)
                                     : AppColors.neutral60,
                                 fontSize: 15,
                               ),
@@ -246,9 +260,9 @@ class _ProfilePageState extends State<ProfilePage> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.neutral0,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.neutral30, width: 0.5),
+                  border: Border.all(color: Theme.of(context).dividerColor, width: 0.5),
                 ),
                 child: Row(
                   children: [
@@ -279,8 +293,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         const SizedBox(height: 2),
                         Obx(() => Text(
                           c.age != null ? '${c.age}' : '—',
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
@@ -405,9 +419,9 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surfaceCard,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.neutral30, width: 0.8),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 0.8),
       ),
       child: Row(
         children: [
@@ -419,10 +433,10 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 Row(
                   children: [
-                    const Text(
+                    Text(
                       'Connected with Google',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
@@ -483,20 +497,21 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildSignInCard() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surfaceCard,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.neutral30, width: 0.8),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 0.8),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
+          Text(
             'Sign in for auto-sync',
             style: TextStyle(
-              color: Colors.white,
+              color: isDark ? Colors.white : Colors.black,
               fontWeight: FontWeight.bold,
               fontSize: 15,
             ),
@@ -555,30 +570,45 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text('Units', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+              Text('Units', style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              )),
               const SizedBox(height: 8),
               const ProfileUnitToggle(),
               const SizedBox(height: 20),
-              const Text('App theme', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+              Text('App theme', style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              )),
               const SizedBox(height: 8),
               Obx(() => Container(
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceLight,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.surfaceLight
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.neutral30, width: 0.5),
+                  border: Border.all(color: Theme.of(context).dividerColor, width: 0.5),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     value: c.appTheme.value,
-                    dropdownColor: AppColors.surfaceCard,
+                    dropdownColor: Theme.of(context).cardColor,
                     icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.neutral60),
                     isExpanded: true,
-                    style: const TextStyle(color: Colors.white, fontSize: 15),
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                      fontSize: 15,
+                    ),
                     items: ['Light', 'Dark', 'System'].map((theme) {
                       return DropdownMenuItem<String>(
                         value: theme,
-                        child: Text(theme),
+                        child: Text(theme, style: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                        )),
                       );
                     }).toList(),
                     onChanged: (val) {
@@ -641,18 +671,22 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               OutlinedButton.icon(
                 onPressed: () => c.confirmReset(context),
-                icon: const Icon(Icons.refresh_rounded, color: Colors.white, size: 18),
-                label: const Text(
+                icon: Icon(
+                  Icons.refresh_rounded,
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                  size: 18,
+                ),
+                label: Text(
                   'Reset settings',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                     fontFamily: 'Montserrat',
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  side: const BorderSide(color: AppColors.neutral30),
+                  side: BorderSide(color: Theme.of(context).dividerColor),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                 ),
               ),

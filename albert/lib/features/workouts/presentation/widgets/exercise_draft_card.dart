@@ -107,7 +107,10 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
               Expanded(
                 child: TextField(
                   controller: _nameController,
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                    fontSize: 16,
+                  ),
                   decoration: InputDecoration(
                     hintText: 'workouts_exercise_hint'.tr,
                     hintStyle: const TextStyle(color: AppColors.neutral60),
@@ -185,7 +188,7 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.surfaceCard,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16),
             ),
             child: content,
@@ -204,7 +207,7 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.surfaceCard,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16),
             ),
             child: content,
@@ -216,9 +219,9 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
         card = Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.surfaceCard,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.neutral30, width: 0.5),
+            border: Border.all(color: Theme.of(context).dividerColor, width: 0.5),
           ),
           child: content,
         );

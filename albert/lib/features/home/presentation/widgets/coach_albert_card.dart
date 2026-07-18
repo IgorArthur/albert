@@ -16,7 +16,7 @@ class CoachAlbertCard extends StatelessWidget {
           height: 150,
           padding: const EdgeInsets.all(20.0),
           decoration: BoxDecoration(
-            color: AppColors.surfaceCard,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(28),
           ),
           child: Column(
@@ -35,11 +35,12 @@ class CoachAlbertCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'home_coach_albert'.tr,
-                    style: TextStyle(
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
                       fontFamily: 'Montserrat',
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.neutral100,
                     ),
                   ),
                 ],

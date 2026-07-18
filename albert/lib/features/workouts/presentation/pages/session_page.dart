@@ -24,7 +24,6 @@ class SessionPage extends StatelessWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.background,
         body: Obx(() {
           final session = ctrl.activeSession.value;
           if (session == null) return const SizedBox.shrink();
@@ -34,35 +33,32 @@ class SessionPage extends StatelessWidget {
           return Column(
             children: [
               // ── App bar ───────────────────────────────────────────────────
-              SafeArea(
-                bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: Row(
-                    children: [
-                      // Empty spacer to balance the counter on the right
-                      const SizedBox(width: 40),
-                      // Centre: IN SESSION + routine name
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Text('session_in_session'.tr)
-                                .overline(color: AppColors.primary100),
-                            const SizedBox(height: 2),
-                            Text(
-                              session.routineName,
-                              textAlign: TextAlign.center,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Montserrat',
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(16, MediaQuery.of(context).padding.top + 8, 16, 0),
+                child: Row(
+                  children: [
+                    // Empty spacer to balance the counter on the right
+                    const SizedBox(width: 40),
+                    // Centre: IN SESSION + routine name
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Text('session_in_session'.tr)
+                              .overline(color: AppColors.primary100),
+                          const SizedBox(height: 2),
+                          Text(
+                            session.routineName,
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontFamily: 'Montserrat',
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
+                      ),
                       ),
                       // Right: counter
                       SizedBox(
@@ -83,7 +79,6 @@ class SessionPage extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
 
               // ── Progress bar ─────────────────────────────────────────────
               const SizedBox(height: 10),
@@ -206,20 +201,20 @@ class SessionPage extends StatelessWidget {
               ),
 
               // ── Timer & Finish session button ────────────────────────────
-              SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 12, 32, 16),
-                  child: Column(
-                    children: [
-                      // Timer with box and icon
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceLight,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.neutral30, width: 0.5),
-                        ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(32, 12, 32, MediaQuery.of(context).padding.bottom + 16),
+                child: Column(
+                  children: [
+                    // Timer with box and icon
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.surfaceLight
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Theme.of(context).dividerColor, width: 0.5),
+                      ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -286,7 +281,6 @@ class SessionPage extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
             ],
           );
         }),

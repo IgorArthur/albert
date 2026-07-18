@@ -25,10 +25,14 @@ class RoutineIconSelector extends StatelessWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primary100 : AppColors.surfaceLight,
+                  color: isSelected
+                      ? AppColors.primary100
+                      : (Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.surfaceLight
+                          : Theme.of(context).cardColor),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: isSelected ? Colors.transparent : AppColors.neutral30,
+                    color: isSelected ? Colors.transparent : Theme.of(context).dividerColor,
                     width: 1,
                   ),
                 ),

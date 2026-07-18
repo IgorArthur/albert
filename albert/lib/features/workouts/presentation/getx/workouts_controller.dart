@@ -97,11 +97,14 @@ class WorkoutsController extends GetxController {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surfaceCard,
+        backgroundColor: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'workouts_delete_title'.tr,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         content: Text(
           'workouts_delete_body'.trParams({'name': routine.name}),
@@ -120,8 +123,8 @@ class WorkoutsController extends GetxController {
               Get.snackbar(
                 'workouts_deleted_title'.tr,
                 'workouts_deleted_body'.trParams({'name': routine.name}),
-                backgroundColor: AppColors.neutral30,
-                colorText: Colors.white,
+                backgroundColor: Theme.of(context).cardColor,
+                colorText: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 snackPosition: SnackPosition.BOTTOM,
               );
             },

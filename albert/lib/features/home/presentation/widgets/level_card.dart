@@ -18,7 +18,7 @@ class LevelCard extends StatelessWidget {
       return Container(
       padding: const EdgeInsets.all(24.0),
       decoration: BoxDecoration(
-        color: AppColors.surfaceCard,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(28),
       ),
       child: Column(
@@ -34,7 +34,7 @@ class LevelCard extends StatelessWidget {
                 children: [
                   Text('home_level'.tr).overline(color: AppColors.neutral60),
                   const SizedBox(height: 4),
-                  Text("${controller.level}").display(color: AppColors.neutral100),
+                  Text("${controller.level}").display(),
                   const SizedBox(height: 6),
                   Text("${controller.currentXp} / ${controller.maxXp} XP").caption(color: AppColors.neutral60),
                 ],
@@ -74,7 +74,7 @@ class LevelCard extends StatelessWidget {
             height: 8,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: AppColors.neutral30,
+              color: Theme.of(context).dividerColor,
               borderRadius: BorderRadius.circular(4),
             ),
             child: Row(

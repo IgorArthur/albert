@@ -54,7 +54,7 @@ class _UnitButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: selected ? AppColors.primary100.withValues(alpha: 0.12) : Colors.transparent,
             border: Border.all(
-              color: selected ? AppColors.primary100 : AppColors.neutral30,
+              color: selected ? AppColors.primary100 : Theme.of(context).dividerColor,
               width: 1.5,
             ),
             borderRadius: BorderRadius.circular(50),

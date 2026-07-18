@@ -296,11 +296,14 @@ class ProfileController extends GetxController {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surfaceCard,
+        backgroundColor: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'profile_reset_title'.tr,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         content: Text(
           'profile_reset_body'.tr,
@@ -386,11 +389,14 @@ class ProfileController extends GetxController {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surfaceCard,
+        backgroundColor: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'profile_sign_out_title'.tr,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         content: Text(
           'profile_sign_out_body'.tr,

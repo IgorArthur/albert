@@ -60,21 +60,23 @@ class _LanguageDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return DropdownButtonHideUnderline(
       child: DropdownButton<_LangOption>(
         value: current,
         isExpanded: true,
-        dropdownColor: AppColors.surfaceCard,
+        dropdownColor: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         icon: const Icon(
           Icons.keyboard_arrow_down_rounded,
           color: AppColors.neutral60,
         ),
-        style: const TextStyle(
+        style: TextStyle(
           fontFamily: 'Montserrat',
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          color: AppColors.neutral100,
+          color: isDark ? Colors.white : Colors.black,
         ),
         // ── Selected item ─────────────────────────────────────────────────
         selectedItemBuilder: (context) => _kLanguages.map((lang) {
@@ -111,7 +113,7 @@ class _LanguageDropdown extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                     color: isSelected
                         ? AppColors.primary100
-                        : AppColors.neutral100,
+                        : (isDark ? Colors.white : Colors.black),
                   ),
                 ),
                 if (isSelected) ...[

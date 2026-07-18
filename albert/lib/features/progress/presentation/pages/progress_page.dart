@@ -22,24 +22,23 @@ class _ProgressPageState extends State<ProgressPage> {
   @override
   Widget build(BuildContext context) {
     final controller = ProgressController.to;
+    final topPadding = MediaQuery.of(context).padding.top;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  const SizedBox(height: 24),
-                  // Header
-                  Text('progress_overline'.tr).overline(color: AppColors.primary100),
-                  Text('progress_title'.tr).display(color: Colors.white),
-                  const SizedBox(height: 4),
-                  Text('progress_subtitle'.tr).body2(color: AppColors.neutral60),
-                  const SizedBox(height: 24),
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(20.0, topPadding + 24.0, 20.0, 24.0),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                // Header
+                Text('progress_overline'.tr).overline(color: AppColors.primary100),
+                const SizedBox(height: 6),
+                Text('progress_title'.tr).display(),
+                const SizedBox(height: 6),
+                Text('progress_subtitle'.tr).body1(color: AppColors.neutral60),
+                const SizedBox(height: 32),
                   
                   // Lifter Level Card
                   Container(
@@ -177,17 +176,17 @@ class _ProgressPageState extends State<ProgressPage> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceLight.withValues(alpha: 0.3),
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: AppColors.neutral30, width: 0.5),
+                      border: Border.all(color: Theme.of(context).dividerColor, width: 0.5),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'progress_last_14_days'.tr,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                             fontFamily: 'Montserrat',
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -225,8 +224,8 @@ class _ProgressPageState extends State<ProgressPage> {
                   // All Sessions Header
                   Text(
                     'progress_all_sessions'.tr,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       fontFamily: 'Montserrat',
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -251,8 +250,7 @@ class _ProgressPageState extends State<ProgressPage> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }
 
@@ -272,9 +270,9 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
-        color: AppColors.surfaceLight.withValues(alpha: 0.3),
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.neutral30, width: 0.5),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -283,8 +281,8 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             value,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
               fontFamily: 'Montserrat',
               fontSize: 24,
               fontWeight: FontWeight.bold,

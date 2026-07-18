@@ -33,49 +33,49 @@ TextStyle _displayStyle({Color? color}) => TextStyle(
   fontSize: 28 * TextSizeManager.currentSize.scale,
   fontWeight: FontWeight.w800,
   letterSpacing: -0.5,
-  color: color ?? AppColors.neutral100,
+  color: color,
 );
 
 TextStyle _headlineStyle({Color? color}) => TextStyle(
   fontFamily: 'Montserrat',
   fontSize: 22 * TextSizeManager.currentSize.scale,
   fontWeight: FontWeight.bold,
-  color: color ?? AppColors.neutral100,
+  color: color,
 );
 
 TextStyle _subtitle1Style({Color? color}) => TextStyle(
   fontFamily: 'Montserrat',
   fontSize: 18 * TextSizeManager.currentSize.scale,
   fontWeight: FontWeight.w600,
-  color: color ?? AppColors.neutral100,
+  color: color,
 );
 
 TextStyle _subtitle2Style({Color? color}) => TextStyle(
   fontFamily: 'Montserrat',
   fontSize: 16 * TextSizeManager.currentSize.scale,
   fontWeight: FontWeight.w500,
-  color: color ?? AppColors.neutral100,
+  color: color,
 );
 
 TextStyle _body1Style({Color? color}) => TextStyle(
   fontFamily: 'Montserrat',
   fontSize: 15 * TextSizeManager.currentSize.scale,
   fontWeight: FontWeight.normal,
-  color: color ?? AppColors.neutral100,
+  color: color,
 );
 
 TextStyle _body2Style({Color? color}) => TextStyle(
   fontFamily: 'Montserrat',
   fontSize: 14 * TextSizeManager.currentSize.scale,
   fontWeight: FontWeight.normal,
-  color: color ?? AppColors.neutral100,
+  color: color,
 );
 
 TextStyle _body2BoldStyle({Color? color}) => TextStyle(
   fontFamily: 'Montserrat',
   fontSize: 14 * TextSizeManager.currentSize.scale,
   fontWeight: FontWeight.bold,
-  color: color ?? AppColors.neutral100,
+  color: color,
 );
 
 TextStyle _captionStyle({Color? color}) => TextStyle(
@@ -89,7 +89,7 @@ TextStyle _captionBoldStyle({Color? color}) => TextStyle(
   fontFamily: 'Montserrat',
   fontSize: 12 * TextSizeManager.currentSize.scale,
   fontWeight: FontWeight.bold,
-  color: color ?? AppColors.neutral100, // Bold captions for active tab
+  color: color, // Bold captions for active tab
 );
 
 TextStyle _overlineStyle({Color? color}) => TextStyle(

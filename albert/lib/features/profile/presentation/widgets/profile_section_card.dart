@@ -30,11 +30,11 @@ class ProfileSectionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surfaceCard,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
         border: borderColor != null
             ? Border.all(color: borderColor!, width: 1)
-            : Border.all(color: AppColors.neutral30, width: 0.8),
+            : Border.all(color: Theme.of(context).dividerColor, width: 0.8),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +59,7 @@ class ProfileSectionCard extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(title).overline(
-                  color: titleColor ?? AppColors.neutral100,
+                  color: titleColor ?? (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
                 ),
               ),
               // ignore: use_null_aware_elements
