@@ -9,11 +9,21 @@ class ProfileSectionCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.child,
+    this.action,
+    this.borderColor,
+    this.titleColor,
+    this.iconColor,
+    this.iconBgColor,
   });
 
   final IconData icon;
   final String title;
   final Widget child;
+  final Widget? action;
+  final Color? borderColor;
+  final Color? titleColor;
+  final Color? iconColor;
+  final Color? iconBgColor;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +32,9 @@ class ProfileSectionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surfaceCard,
         borderRadius: BorderRadius.circular(24),
+        border: borderColor != null
+            ? Border.all(color: borderColor!, width: 1)
+            : Border.all(color: AppColors.neutral30, width: 0.8),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,14 +46,24 @@ class ProfileSectionCard extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: AppColors.primary100.withValues(alpha: 0.15),
+                  color: iconBgColor ?? AppColors.primary100.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
                 alignment: Alignment.center,
-                child: Icon(icon, color: AppColors.primary100, size: 18),
+                child: Icon(
+                  icon,
+                  color: iconColor ?? AppColors.primary100,
+                  size: 18,
+                ),
               ),
               const SizedBox(width: 12),
-              Text(title).overline(color: AppColors.neutral100),
+              Expanded(
+                child: Text(title).overline(
+                  color: titleColor ?? AppColors.neutral100,
+                ),
+              ),
+              // ignore: use_null_aware_elements
+              if (action != null) action!,
             ],
           ),
           const SizedBox(height: 20),

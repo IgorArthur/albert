@@ -33,10 +33,24 @@ class ProfileSummaryCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 alignment: Alignment.center,
-                child: Text(
-                  c.selectedAvatar.value,
-                  style: const TextStyle(fontSize: 28),
-                ),
+                child: c.photoUrl.value.isNotEmpty
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.network(
+                          c.photoUrl.value,
+                          width: 56,
+                          height: 56,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Text(
+                            c.selectedAvatar.value,
+                            style: const TextStyle(fontSize: 28),
+                          ),
+                        ),
+                      )
+                    : Text(
+                        c.selectedAvatar.value,
+                        style: const TextStyle(fontSize: 28),
+                      ),
               ),
               const SizedBox(width: 16),
               // Info

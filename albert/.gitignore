@@ -43,3 +43,14 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Node dependencies
+/node_modules/
+
+android/app/google-services.json
+ios/firebase_app_id_file.json
+ios/Runner/GoogleServices-Info.plist
+lib/features/utils/firebase/files/firebase_options.dart
+
+# Environment variables
+.env

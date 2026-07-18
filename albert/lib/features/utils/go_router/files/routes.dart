@@ -2,20 +2,39 @@ import 'package:albert/features/home/presentation/pages/home_page.dart';
 import 'package:albert/features/workouts/workouts.dart';
 import 'package:albert/features/profile/profile.dart';
 import 'package:albert/features/progress/progress.dart';
+import 'package:albert/features/login/login.dart';
 import 'package:albert/features/utils/go_router/files/layout_scaffold.dart';
 import 'package:albert/features/workouts/presentation/pages/session_page.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:albert/features/utils/hive/files/boxes.dart';
+
 final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 final router = GoRouter(
   navigatorKey: rootNavigatorKey,
-  initialLocation: Routes.homePage,
+  initialLocation: boxAuth.get('user') != null ? Routes.homePage : Routes.loginPage,
   routes: [
     StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) =>
-          LayoutScaffold(navigationShell: navigationShell),
+      pageBuilder: (context, state, navigationShell) => CustomTransitionPage(
+        key: state.pageKey,
+        child: LayoutScaffold(navigationShell: navigationShell),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          final scaleAnimation = Tween<double>(begin: 0.96, end: 1.0).animate(
+            CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+          );
+          final fadeAnimation = CurvedAnimation(parent: animation, curve: Curves.easeIn);
+          return FadeTransition(
+            opacity: fadeAnimation,
+            child: ScaleTransition(
+              scale: scaleAnimation,
+              child: child,
+            ),
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 400),
+      ),
       branches: [
         StatefulShellBranch(
           routes: [
@@ -57,6 +76,13 @@ final router = GoRouter(
       path: Routes.sessionPage,
       builder: (context, state) => const SessionPage(),
     ),
+    // Login route — outside the shell
+    GoRoute(
+      path: Routes.loginPage,
+      pageBuilder: (context, state) => const NoTransitionPage(
+        child: LoginPage(),
+      ),
+    ),
   ],
 );
 
@@ -67,4 +93,5 @@ class Routes {
   static const String profilePage = '/profile';
   static const String progressPage = '/progress';
   static const String sessionPage = '/session';
+  static const String loginPage = '/login';
 }

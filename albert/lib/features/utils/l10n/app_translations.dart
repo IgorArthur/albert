@@ -11,6 +11,15 @@ class AppTranslations extends Translations {
 // ── English ────────────────────────────────────────────────────────────────
 
 const Map<String, String> _en = {
+  // ── Login ─────────────────────────────────────────────────────────────────
+  'login_welcome': 'Welcome to Albert',
+  'login_subtitle': 'Your AI gym coach. Plan routines, log sets, level up.',
+  'login_continue_google': 'Continue with Google',
+  'login_or': 'OR',
+  'login_continue_without': 'Continue without login',
+  'login_loading': 'Logging in...',
+  'logout_loading': 'Logging out...',
+
   // ── Home ──────────────────────────────────────────────────────────────────
   'home_welcome_back': 'WELCOME BACK',
   'home_subtitle': "Let's lift, athlete.",
@@ -94,6 +103,8 @@ const Map<String, String> _en = {
   'session_start_btn': 'Start session',
 
   // ── Profile ───────────────────────────────────────────────────────────────
+  'profile_tab_account': 'Account',
+  'profile_tab_settings': 'Settings',
   'profile_overline': 'PROFILE',
   'profile_title': 'Your account',
   'profile_subtitle': 'Tune Albert to fit you.',
@@ -143,7 +154,10 @@ const Map<String, String> _en = {
   'profile_reset_cancel': 'Cancel',
   'profile_reset_done_title': 'Settings reset',
   'profile_reset_done_body': 'All settings have been restored to defaults.',
-  'profile_sign_out': 'Sign out (coming soon)',
+  'profile_sign_out': 'Sign out',
+  'profile_sign_out_title': 'Sign out',
+  'profile_sign_out_body': 'Are you sure you want to sign out?',
+  'profile_sign_out_confirm': 'Sign out',
   // Level / streak labels (used in profile summary card)
   'profile_level_label': 'Lvl @level',
   'profile_streak_label': '@days d streak',
@@ -154,6 +168,15 @@ const Map<String, String> _en = {
 // ── Portuguese (Brazil) ───────────────────────────────────────────────────
 
 const Map<String, String> _pt = {
+  // ── Login ─────────────────────────────────────────────────────────────────
+  'login_welcome': 'Boas-vindas ao Albert',
+  'login_subtitle': 'Seu treinador de academia com IA. Planeje rotinas, registre séries, suba de nível.',
+  'login_continue_google': 'Continuar com o Google',
+  'login_or': 'OU',
+  'login_continue_without': 'Continuar sem login',
+  'login_loading': 'Entrando...',
+  'logout_loading': 'Saindo...',
+
   // ── Home ──────────────────────────────────────────────────────────────────
   'home_welcome_back': 'BEM-VINDO DE VOLTA',
   'home_subtitle': 'Vamos treinar, atleta.',
@@ -241,6 +264,8 @@ const Map<String, String> _pt = {
   'session_start_btn': 'Iniciar sessão',
 
   // ── Profile ───────────────────────────────────────────────────────────────
+  'profile_tab_account': 'Conta',
+  'profile_tab_settings': 'Configurações',
   'profile_overline': 'PERFIL',
   'profile_title': 'Sua conta',
   'profile_subtitle': 'Personalize o Albert para você.',
@@ -291,7 +316,10 @@ const Map<String, String> _pt = {
   'profile_reset_cancel': 'Cancelar',
   'profile_reset_done_title': 'Configurações redefinidas',
   'profile_reset_done_body': 'Todas as configurações foram restauradas.',
-  'profile_sign_out': 'Sair (em breve)',
+  'profile_sign_out': 'Sair',
+  'profile_sign_out_title': 'Sair',
+  'profile_sign_out_body': 'Tem certeza de que deseja sair?',
+  'profile_sign_out_confirm': 'Sair',
   // Level / streak labels
   'profile_level_label': 'Nív @level',
   'profile_streak_label': '@days d sequência',
