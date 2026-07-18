@@ -15,7 +15,7 @@ class ProfileSummaryCard extends StatelessWidget {
     return Obx(() => Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: AppColors.surfaceCard,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(24),
           ),
           child: Row(
@@ -58,7 +58,7 @@ class ProfileSummaryCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(c.displayName.value).subtitle1(color: AppColors.neutral100),
+                    Text(c.displayName.value).subtitle1(),
                     const SizedBox(height: 2),
                     Text(c.emailSubtitle).caption(color: AppColors.neutral60),
                     const SizedBox(height: 8),

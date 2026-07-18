@@ -13,21 +13,24 @@ class AddWorkoutSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = WorkoutsController.to;
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final topPadding = MediaQuery.of(context).viewPadding.top;
+    final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.88,
       ),
       child: Container(
-      decoration: const BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.only(
         left: 16,
         right: 16,
-        top: 20,
+        top: topPadding > 0 ? topPadding + 24 : 48,
         bottom: bottomPadding > 0 ? bottomPadding + 16 : 24,
       ),
       child: Column(
@@ -40,8 +43,8 @@ class AddWorkoutSheet extends StatelessWidget {
             children: [
               Text(
                 controller.sheetTitle,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 22,
                 ),
@@ -50,11 +53,11 @@ class AddWorkoutSheet extends StatelessWidget {
                 onTap: () => Navigator.of(context).pop(),
                 child: Container(
                   padding: const EdgeInsets.all(6),
-                  decoration: const BoxDecoration(
-                    color: AppColors.surfaceLight,
+                  decoration: BoxDecoration(
+                    color: isDark ? AppColors.surfaceLight : Colors.grey.shade200,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.close, color: Colors.white, size: 20),
+                  child: Icon(Icons.close, color: isDark ? Colors.white : Colors.black, size: 20),
                 ),
               ),
             ],
@@ -72,14 +75,14 @@ class AddWorkoutSheet extends StatelessWidget {
                   const SizedBox(height: 8),
                   Container(
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceCard,
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.neutral30, width: 0.5),
+                      border: Border.all(color: Theme.of(context).dividerColor, width: 0.5),
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     child: TextField(
                       controller: controller.newRoutineNameController,
-                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                      style: TextStyle(color: isDark ? Colors.white : Colors.black, fontSize: 16),
                       decoration: InputDecoration(
                         hintText: 'workouts_name_hint'.tr,
                         hintStyle: const TextStyle(color: AppColors.neutral60),

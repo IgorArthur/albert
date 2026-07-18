@@ -185,7 +185,7 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.surfaceCard,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16),
             ),
             child: content,
@@ -204,7 +204,7 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.surfaceCard,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16),
             ),
             child: content,
@@ -216,9 +216,9 @@ class _ExerciseDraftCardState extends State<ExerciseDraftCard> {
         card = Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.surfaceCard,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.neutral30, width: 0.5),
+            border: Border.all(color: Theme.of(context).dividerColor, width: 0.5),
           ),
           child: content,
         );

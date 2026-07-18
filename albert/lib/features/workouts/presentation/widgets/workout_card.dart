@@ -19,9 +19,9 @@ class WorkoutCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceCard,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.neutral30, width: 0.5),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -44,8 +44,10 @@ class WorkoutCard extends StatelessWidget {
                     Container(
                       width: 48,
                       height: 48,
-                      decoration: const BoxDecoration(
-                        color: AppColors.surfaceLight,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.surfaceLight
+                            : Colors.white,
                         shape: BoxShape.circle,
                       ),
                       alignment: Alignment.center,
@@ -60,7 +62,7 @@ class WorkoutCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(routine.name).subtitle1(color: Colors.white),
+                          Text(routine.name).subtitle1(),
                           const SizedBox(height: 4),
                           Text(
                             exercisesText,
@@ -93,7 +95,7 @@ class WorkoutCard extends StatelessWidget {
             ),
           ),
           // Divider
-          const Divider(color: AppColors.neutral30, height: 1, thickness: 0.5),
+          Divider(color: Theme.of(context).dividerColor, height: 1, thickness: 0.5),
           // Bottom section — start session
           Material(
             color: Colors.transparent,

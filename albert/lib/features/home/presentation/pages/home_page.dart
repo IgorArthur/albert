@@ -14,25 +14,23 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = HomeController.to;
+    final topPadding = MediaQuery.of(context).padding.top;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 12),
-              // Welcome Header
-              Text('home_welcome_back'.tr).overline(color: AppColors.primary100),
-              const SizedBox(height: 4),
-              Text('home_subtitle'.tr).display(color: AppColors.neutral100),
-              const SizedBox(height: 4),
-              Text('home_body'.tr).body1(color: AppColors.neutral60),
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(20.0, topPadding + 24.0, 20.0, 24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Welcome Header
+            Text('home_welcome_back'.tr).overline(color: AppColors.primary100),
+            const SizedBox(height: 6),
+            Text('home_subtitle'.tr).display(),
+            const SizedBox(height: 6),
+            Text('home_body'.tr).body1(color: AppColors.neutral60),
 
-              const SizedBox(height: 28),
+            const SizedBox(height: 32),
               // Athlete Level Card
               const LevelCard(),
 
@@ -84,7 +82,6 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }

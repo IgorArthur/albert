@@ -18,7 +18,7 @@ class RoutineCard extends StatelessWidget {
         width: 140,
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         decoration: BoxDecoration(
-          color: AppColors.surfaceCard,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Column(
@@ -37,7 +37,6 @@ class RoutineCard extends StatelessWidget {
                 fontFamily: 'Montserrat',
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: AppColors.neutral100,
               ),
             ),
             const SizedBox(height: 4),

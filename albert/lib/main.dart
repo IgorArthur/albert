@@ -42,11 +42,15 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
           scaffoldBackgroundColor: Colors.white,
           canvasColor: Colors.white,
+          cardColor: const Color(0xFFF2F2F7),
+          dividerColor: Colors.black.withValues(alpha: 0.08),
         ),
         darkTheme: ThemeData(
           brightness: Brightness.dark,
           scaffoldBackgroundColor: AppColors.background,
           canvasColor: AppColors.background,
+          cardColor: AppColors.surfaceCard,
+          dividerColor: AppColors.neutral30,
         ),
         themeMode: ProfileController.to.currentThemeMode,
         // ── Router (GoRouter delegates) ──────────────────────────────────────

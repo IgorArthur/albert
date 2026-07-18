@@ -41,18 +41,22 @@ class CustomNavigationBar extends StatelessWidget {
     return GetBuilder<NavigationBarController>(
       builder: (controller) {
         return Container(
-          decoration: const BoxDecoration(
-            color: AppColors.neutral0,
+          decoration: BoxDecoration(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.neutral0
+                : Colors.white,
             border: Border(
               top: BorderSide(
-                color: AppColors.neutral30,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.neutral30
+                    : Colors.black.withValues(alpha: 0.08),
                 width: 0.5,
               ),
             ),
           ),
           padding: EdgeInsets.only(
             top: 12,
-            bottom: bottomPadding > 0 ? bottomPadding : 12,
+            bottom: bottomPadding > 0 ? bottomPadding + 8.0 : 16.0,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -90,7 +94,10 @@ class CustomNavigationBar extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       isSelected
-                          ? Text(destination.label).captionBold(color: AppColors.neutral100)
+                          ? Text(destination.label).captionBold(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black)
                           : Text(destination.label).caption(color: AppColors.neutral60),
                     ],
                   ),
