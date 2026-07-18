@@ -62,7 +62,7 @@ class WorkoutCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(routine.name).subtitle1(),
+                          Text(routine.name, maxLines: 1, overflow: TextOverflow.ellipsis).subtitle1(),
                           const SizedBox(height: 4),
                           Text(
                             exercisesText,
@@ -75,6 +75,8 @@ class WorkoutCard extends StatelessWidget {
                               'exercises': '${routine.exercises.length}',
                               'sets': '${routine.totalSets}',
                             }),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ).captionBold(color: AppColors.primary100),
                         ],
                       ),

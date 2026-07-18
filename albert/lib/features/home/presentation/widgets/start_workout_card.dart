@@ -41,6 +41,8 @@ class StartWorkoutCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     "🔥 ${controller.nextWorkoutName}",
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontFamily: 'Montserrat',
                       fontSize: 18,

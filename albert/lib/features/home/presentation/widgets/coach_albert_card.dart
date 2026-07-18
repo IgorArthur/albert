@@ -35,6 +35,8 @@ class CoachAlbertCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'home_coach_albert'.tr,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontFamily: 'Montserrat',
                       fontSize: 18,
