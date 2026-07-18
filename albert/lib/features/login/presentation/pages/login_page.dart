@@ -77,7 +77,7 @@ class LoginPage extends StatelessWidget {
 
               // "Continue with Google" Button
               ElevatedButton(
-                onPressed: () => controller.continueWithGoogle(),
+                onPressed: () => controller.continueWithGoogle(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.neutral100,
                   foregroundColor: Colors.black,

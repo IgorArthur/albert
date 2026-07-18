@@ -456,7 +456,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
           GestureDetector(
-            onTap: c.signOut,
+            onTap: () => c.confirmSignOut(context),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -511,7 +511,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () => LoginController.to.continueWithGoogle(),
+            onPressed: () => LoginController.to.continueWithGoogle(context),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.neutral30,
               foregroundColor: Colors.white,

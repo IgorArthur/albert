@@ -1,7 +1,7 @@
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:albert/features/utils/hive/files/boxes.dart';
-import 'package:albert/features/utils/go_router/files/routes.dart';
+import 'package:albert/features/utils/utils.dart';
 import 'package:albert/features/profile/domain/models/user_profile.dart';
 import 'package:albert/features/profile/domain/repositories/profile_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -382,7 +382,42 @@ class ProfileController extends GetxController {
     );
   }
 
-  void signOut() async {
+  void confirmSignOut(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surfaceCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'profile_sign_out_title'.tr,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          'profile_sign_out_body'.tr,
+          style: const TextStyle(color: AppColors.neutral60),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('profile_reset_cancel'.tr,
+                style: const TextStyle(color: AppColors.neutral60)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              signOut(context);
+            },
+            child: Text('profile_sign_out_confirm'.tr,
+                style: const TextStyle(
+                    color: AppColors.error100, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void signOut(BuildContext context) async {
+    showLoadingOverlay(context, 'logout_loading'.tr);
     try {
       await Get.find<ProfileRepository>().clearProfile();
       await FirebaseAuth.instance.signOut();
@@ -395,6 +430,10 @@ class ProfileController extends GetxController {
       birthdayController.text = '';
     } catch (e) {
       debugPrint('Error during sign out: $e');
+    } finally {
+      if (context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
     }
     // Navigate back to the Login page.
     router.go(Routes.loginPage);

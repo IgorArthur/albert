@@ -1,4 +1,4 @@
-import 'package:albert/features/utils/go_router/files/routes.dart';
+import 'package:albert/features/utils/utils.dart';
 import 'package:albert/features/utils/hive/files/boxes.dart';
 import 'package:albert/features/profile/presentation/getx/profile_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,8 +11,9 @@ class LoginController extends GetxController {
 
   // ─── Actions ──────────────────────────────────────────────────────────────
 
-  void continueWithGoogle() async {
+  void continueWithGoogle(BuildContext context) async {
     debugPrint('Google Sign-In pressed');
+    showLoadingOverlay(context, 'login_loading'.tr);
     try {
       // 1. Trigger the native Google Sign-In flow.
       final googleUser = await GoogleSignIn.instance.authenticate();
@@ -53,6 +54,10 @@ class LoginController extends GetxController {
         backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
+    } finally {
+      if (context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
     }
   }
 
