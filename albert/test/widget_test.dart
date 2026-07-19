@@ -4,6 +4,7 @@ import 'package:albert/features/utils/hive/files/boxes.dart';
 import 'package:albert/features/workouts/data/hive/exercise.dart';
 import 'package:albert/features/workouts/data/hive/routine.dart';
 import 'package:albert/features/workouts/data/hive/workout_session.dart';
+import 'package:albert/features/workouts/data/models/workout_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
@@ -21,11 +22,20 @@ void main() {
       Hive.registerAdapter(ExerciseAdapter());
       Hive.registerAdapter(RoutineAdapter());
       Hive.registerAdapter(WorkoutSessionAdapter());
+      Hive.registerAdapter(WorkoutModelAdapter());
     } catch (_) {}
 
     boxExercises = await Hive.openBox<Exercise>('exerciseBox');
     boxRoutines = await Hive.openBox<Routine>('routineBox');
     boxWorkoutSessions = await Hive.openBox<WorkoutSession>('workoutSessionBox');
+    boxAuth = await Hive.openBox('authBox');
+    await boxAuth.put('user', {
+      'uid': '123',
+      'email': 'athlete@example.com',
+      'displayName': 'Athlete',
+      'photoURL': '',
+    });
+    await Hive.openBox<WorkoutModel>('workoutCacheBox');
 
     registerGetxControllers();
   });

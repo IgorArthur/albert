@@ -1,6 +1,8 @@
 import 'package:albert/features/utils/utils.dart';
 import 'package:albert/features/utils/hive/files/boxes.dart';
 import 'package:albert/features/profile/presentation/getx/profile_controller.dart';
+import 'package:albert/features/profile/domain/models/user_profile.dart';
+import 'package:albert/features/profile/domain/repositories/profile_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -30,13 +32,18 @@ class LoginController extends GetxController {
       final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
       final user = userCredential.user;
       if (user != null) {
-        await boxAuth.put('user', {
-          'uid': user.uid,
-          'email': user.email,
-          'displayName': user.displayName,
-          'photoURL': user.photoURL,
-          'birthday': DateTime(1998, 10, 24).toIso8601String(),
-        });
+        final profile = UserProfile(
+          uid: user.uid,
+          email: user.email ?? '',
+          displayName: user.displayName ?? 'Athlete',
+          photoUrl: user.photoURL ?? '',
+          avatar: '💪',
+          heightCm: 180.0,
+          weightKg: 75.0,
+          dateOfBirth: DateTime(1998, 10, 24),
+        );
+        await Get.find<ProfileRepository>().saveProfile(profile);
+
         if (Get.isRegistered<ProfileController>()) {
           ProfileController.to.loadUserFromStorage();
         }
