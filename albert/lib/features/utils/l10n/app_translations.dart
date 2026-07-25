@@ -165,6 +165,7 @@ const Map<String, String> _en = {
   'profile_streak_label': '@days d streak',
   'profile_xp_label': '@xp/@max XP',
   'profile_no_email': 'No email set',
+  'progress_total_time_label': 'TOTAL TIME',
 };
 
 // ── Portuguese (Brazil) ───────────────────────────────────────────────────
@@ -330,4 +331,5 @@ const Map<String, String> _pt = {
   'profile_streak_label': '@days d sequência',
   'profile_xp_label': '@xp/@max XP',
   'profile_no_email': 'Nenhum e-mail definido',
+  'progress_total_time_label': 'TEMPO TOTAL',
 };

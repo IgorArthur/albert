@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:albert/features/progress/presentation/getx/progress_controller.dart';
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/go_router/files/routes.dart';
 import 'package:albert/features/utils/hive/files/boxes.dart';
@@ -8,6 +9,8 @@ import 'package:albert/features/workouts/data/hive/routine.dart';
 import 'package:albert/features/workouts/data/hive/workout_session.dart';
 import 'package:albert/features/workouts/domain/entities/workout.dart';
 import 'package:albert/features/workouts/domain/usecases/add_workout.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
@@ -51,7 +54,7 @@ class SessionController extends GetxController {
 
   // ── Session lifecycle ─────────────────────────────────────────────────────
 
-  void startSession(BuildContext context, Routine routine) {
+  void startSession(BuildContext context, Routine routine) async {
     Navigator.of(context, rootNavigator: true).pop(); // close dialog
 
     final cloned = routine.exercises
@@ -66,7 +69,7 @@ class SessionController extends GetxController {
       exercises: cloned,
     );
 
-    boxWorkoutSessions.put(session.id, session);
+    await boxWorkoutSessions.put(session.id, session);
 
     activeSession.value = session;
     completedIndices.clear();
@@ -76,6 +79,14 @@ class SessionController extends GetxController {
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       elapsedSeconds.value++;
     });
+
+    // 1. Sync started session in_progress to Firestore
+    _syncSessionToRemote(session, status: 'in_progress');
+
+    // 2. Sync user progress to Firestore when starting a session
+    if (Get.isRegistered<ProgressController>()) {
+      ProgressController.to.syncProgressToFirestore();
+    }
 
     context.push(Routes.sessionPage);
   }
@@ -146,14 +157,17 @@ class SessionController extends GetxController {
     final session = activeSession.value;
     if (session != null) {
       session.finishedAt = DateTime.now();
-      boxWorkoutSessions.put(session.id, session);
+      await boxWorkoutSessions.put(session.id, session);
 
-      // Save each exercise in the completed session as a Workout log in the repository (local cache & Firestore)
+      // 1. Sync completed session to Firestore
+      _syncSessionToRemote(session, status: 'completed');
+
+      // 2. Save each exercise in the completed session as a Workout log
       for (var i = 0; i < session.exercises.length; i++) {
         final exercise = session.exercises[i];
         if (exercise.name.isNotEmpty) {
           final workout = Workout(
-            id: '${session.id}_$i', // unique ID combining session ID and index
+            id: '${session.id}_$i',
             exerciseName: exercise.name,
             sets: exercise.sets,
             reps: exercise.reps,
@@ -169,6 +183,11 @@ class SessionController extends GetxController {
           }
         }
       }
+
+      // 3. Sync updated progress stats to Firestore
+      if (Get.isRegistered<ProgressController>()) {
+        ProgressController.to.syncProgressToFirestore();
+      }
     }
 
     activeSession.value = null;
@@ -176,6 +195,40 @@ class SessionController extends GetxController {
     elapsedSeconds.value = 0;
 
     context.pop();
+  }
+
+  Future<void> _syncSessionToRemote(WorkoutSession session, {required String status}) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    try {
+      final doc = FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('sessions')
+          .doc(session.id);
+
+      await doc.set({
+        'id': session.id,
+        'routineId': session.routineId,
+        'routineName': session.routineName,
+        'startedAt': session.startedAt.toIso8601String(),
+        'finishedAt': session.finishedAt?.toIso8601String(),
+        'status': status,
+        'exercises': session.exercises
+            .map((e) => {
+                  'name': e.name,
+                  'sets': e.sets,
+                  'reps': e.reps,
+                  'kg': e.kg,
+                })
+            .toList(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+      debugPrint('Workout session $status synced to Firestore: ${session.id}');
+    } catch (e) {
+      debugPrint('Error syncing workout session $status to Firestore: $e');
+    }
   }
 
   void cancelSession(BuildContext context) {

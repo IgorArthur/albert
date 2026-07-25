@@ -1,5 +1,6 @@
 import 'package:albert/core/usecases/usecase.dart';
 import 'package:albert/features/profile/presentation/getx/profile_controller.dart';
+import 'package:albert/features/progress/presentation/getx/progress_controller.dart';
 import 'package:albert/features/workouts/domain/usecases/get_workouts.dart';
 import 'package:albert/features/workouts/presentation/controllers/workout_controller.dart';
 import 'package:albert/features/workouts/presentation/getx/workouts_controller.dart';
@@ -31,5 +32,10 @@ Future<void> refreshAppData() async {
 
   if (Get.isRegistered<WorkoutController>()) {
     await Get.find<WorkoutController>().loadWorkouts();
+  }
+
+  // 4. Refresh User Progress Stats from Firestore
+  if (Get.isRegistered<ProgressController>()) {
+    await ProgressController.to.fetchProgressFromRemote();
   }
 }

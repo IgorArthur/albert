@@ -372,16 +372,14 @@ class WorkoutsController extends GetxController {
       final col = _routinesCollection;
       final snapshot = await col.get();
       if (snapshot.docs.isNotEmpty) {
-        await boxRoutines.clear();
-        final List<Routine> remoteRoutines = [];
         for (final doc in snapshot.docs) {
           final r = _routineFromJson(doc.data());
-          remoteRoutines.add(r);
           await boxRoutines.put(r.id, r);
         }
-        remoteRoutines.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-        routines.assignAll(remoteRoutines);
-        debugPrint('Successfully hydrated ${remoteRoutines.length} routines from Firestore');
+        final allRoutines = boxRoutines.values.toList().cast<Routine>();
+        allRoutines.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+        routines.assignAll(allRoutines);
+        debugPrint('Successfully loaded ${allRoutines.length} routines from storage');
       }
     } catch (e) {
       debugPrint('Error loading routines from Firestore: $e');

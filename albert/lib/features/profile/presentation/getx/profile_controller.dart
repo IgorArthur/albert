@@ -2,7 +2,9 @@ import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:albert/features/utils/hive/files/boxes.dart';
 import 'package:albert/features/utils/utils.dart';
+import 'package:albert/features/progress/presentation/getx/progress_controller.dart';
 import 'package:albert/features/workouts/presentation/getx/workouts_controller.dart';
+import 'package:albert/features/workouts/presentation/controllers/workout_controller.dart';
 import 'package:albert/features/profile/domain/models/user_profile.dart';
 import 'package:albert/features/profile/domain/repositories/profile_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -115,10 +117,22 @@ class ProfileController extends GetxController {
 
   // ─── Gamification (read-only) ─────────────────────────────────────────────
 
-  final int level = 1;
-  final int currentXp = 0;
-  final int maxXp = 250;
-  final int streakDays = 0;
+  int get level => Get.isRegistered<ProgressController>()
+      ? ProgressController.to.level.value
+      : 1;
+
+  int get currentXp => Get.isRegistered<ProgressController>()
+      ? ProgressController.to.currentXp.value
+      : 0;
+
+  int get maxXp => Get.isRegistered<ProgressController>()
+      ? (ProgressController.to.xpToNextLevel.value +
+          ProgressController.to.currentXp.value)
+      : 250;
+
+  int get streakDays => Get.isRegistered<ProgressController>()
+      ? ProgressController.to.streakDays.value
+      : 0;
 
   String get emailSubtitle =>
       email.value.isEmpty ? 'profile_no_email'.tr : email.value;
@@ -437,8 +451,10 @@ class ProfileController extends GetxController {
       birthdayController.text = '';
 
       if (Get.isRegistered<WorkoutsController>()) {
-        await boxRoutines.clear();
         WorkoutsController.to.refreshRoutines();
+      }
+      if (Get.isRegistered<WorkoutController>()) {
+        Get.find<WorkoutController>().loadWorkouts();
       }
     } catch (e) {
       debugPrint('Error during sign out: $e');
