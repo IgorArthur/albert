@@ -8,6 +8,7 @@ import 'package:albert/features/profile/presentation/widgets/profile_text_field.
 import 'package:albert/features/profile/presentation/widgets/profile_unit_toggle.dart';
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
+import 'package:albert/features/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -28,9 +29,14 @@ class _ProfilePageState extends State<ProfilePage> {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: EdgeInsets.fromLTRB(20.0, topPadding + 24.0, 20.0, bottomPadding + 24.0),
+      body: RefreshIndicator(
+        onRefresh: refreshAppData,
+        color: AppColors.primary100,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
+          padding: EdgeInsets.fromLTRB(20.0, topPadding + 24.0, 20.0, bottomPadding + 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -63,7 +69,8 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           ),
         ),
-      );
+      ),
+    );
   }
 
   Widget _buildTabBar() {

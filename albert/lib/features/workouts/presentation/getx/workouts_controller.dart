@@ -370,18 +370,18 @@ class WorkoutsController extends GetxController {
 
     try {
       final col = _routinesCollection;
-      if (col != null) {
-        final snapshot = await col.get();
-        if (snapshot.docs.isNotEmpty) {
-          final List<Routine> remoteRoutines = [];
-          for (final doc in snapshot.docs) {
-            final r = _routineFromJson(doc.data());
-            remoteRoutines.add(r);
-            await boxRoutines.put(r.id, r);
-          }
-          remoteRoutines.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-          routines.assignAll(remoteRoutines);
+      final snapshot = await col.get();
+      if (snapshot.docs.isNotEmpty) {
+        await boxRoutines.clear();
+        final List<Routine> remoteRoutines = [];
+        for (final doc in snapshot.docs) {
+          final r = _routineFromJson(doc.data());
+          remoteRoutines.add(r);
+          await boxRoutines.put(r.id, r);
         }
+        remoteRoutines.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+        routines.assignAll(remoteRoutines);
+        debugPrint('Successfully hydrated ${remoteRoutines.length} routines from Firestore');
       }
     } catch (e) {
       debugPrint('Error loading routines from Firestore: $e');

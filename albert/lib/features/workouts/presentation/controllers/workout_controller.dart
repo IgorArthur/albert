@@ -6,6 +6,8 @@ import '../../domain/usecases/get_workouts.dart';
 import '../../../../core/usecases/usecase.dart';
 
 class WorkoutController extends GetxController {
+  static WorkoutController get to => Get.find();
+
   final GetWorkouts getWorkoutsUsecase;
   final AddWorkout addWorkoutUsecase;
   final DeleteWorkout deleteWorkoutUsecase;
