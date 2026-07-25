@@ -2,6 +2,7 @@ import 'package:albert/features/utils/hive/files/boxes.dart';
 import 'package:albert/features/workouts/data/hive/exercise.dart';
 import 'package:albert/features/workouts/data/hive/routine.dart';
 import 'package:albert/features/workouts/data/hive/workout_session.dart';
+import 'package:albert/features/workouts/data/models/workout_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 Future<void> initHiveAndBoxes() async {
@@ -14,6 +15,7 @@ void _registerHiveAdapters() {
   Hive.registerAdapter(ExerciseAdapter());
   Hive.registerAdapter(RoutineAdapter());
   Hive.registerAdapter(WorkoutSessionAdapter());
+  Hive.registerAdapter(WorkoutModelAdapter());
 }
 
 Future<void> _openHiveBoxes() async {
@@ -21,4 +23,5 @@ Future<void> _openHiveBoxes() async {
   boxRoutines = await Hive.openBox<Routine>('routineBox');
   boxWorkoutSessions = await Hive.openBox<WorkoutSession>('workoutSessionBox');
   boxAuth = await Hive.openBox('authBox');
+  await Hive.openBox<WorkoutModel>('workoutCacheBox');
 }

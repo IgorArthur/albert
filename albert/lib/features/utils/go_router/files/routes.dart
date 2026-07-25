@@ -9,6 +9,10 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:albert/features/utils/hive/files/boxes.dart';
+import 'package:albert/features/coach/presentation/pages/coach_page.dart';
+import 'package:albert/features/coach/presentation/bindings/coach_binding.dart';
+import 'package:albert/features/workouts/presentation/pages/workout_page.dart';
+import 'package:albert/features/workouts/presentation/bindings/workout_binding.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
@@ -83,6 +87,22 @@ final router = GoRouter(
         child: LoginPage(),
       ),
     ),
+    // Coach AI route
+    GoRoute(
+      path: Routes.coachPage,
+      builder: (context, state) {
+        CoachBinding().dependencies();
+        return const CoachPage();
+      },
+    ),
+    // Clean Architecture Workout History list route
+    GoRoute(
+      path: Routes.workoutHistoryPage,
+      builder: (context, state) {
+        WorkoutBinding().dependencies();
+        return const WorkoutPage();
+      },
+    ),
   ],
 );
 
@@ -94,4 +114,6 @@ class Routes {
   static const String progressPage = '/progress';
   static const String sessionPage = '/session';
   static const String loginPage = '/login';
+  static const String coachPage = '/coach';
+  static const String workoutHistoryPage = '/workout-history';
 }

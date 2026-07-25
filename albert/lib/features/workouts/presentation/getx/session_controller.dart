@@ -6,6 +6,8 @@ import 'package:albert/features/utils/hive/files/boxes.dart';
 import 'package:albert/features/workouts/data/hive/exercise.dart';
 import 'package:albert/features/workouts/data/hive/routine.dart';
 import 'package:albert/features/workouts/data/hive/workout_session.dart';
+import 'package:albert/features/workouts/domain/entities/workout.dart';
+import 'package:albert/features/workouts/domain/usecases/add_workout.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
@@ -137,7 +139,7 @@ class SessionController extends GetxController {
     );
   }
 
-  void finishSession(BuildContext context) {
+  void finishSession(BuildContext context) async {
     _timer?.cancel();
     _timer = null;
 
@@ -145,6 +147,28 @@ class SessionController extends GetxController {
     if (session != null) {
       session.finishedAt = DateTime.now();
       boxWorkoutSessions.put(session.id, session);
+
+      // Save each exercise in the completed session as a Workout log in the repository (local cache & Firestore)
+      for (var i = 0; i < session.exercises.length; i++) {
+        final exercise = session.exercises[i];
+        if (exercise.name.isNotEmpty) {
+          final workout = Workout(
+            id: '${session.id}_$i', // unique ID combining session ID and index
+            exerciseName: exercise.name,
+            sets: exercise.sets,
+            reps: exercise.reps,
+            weightKg: exercise.kg,
+            date: session.finishedAt ?? DateTime.now(),
+          );
+          try {
+            if (Get.isRegistered<AddWorkout>()) {
+              await Get.find<AddWorkout>().call(AddWorkoutParams(workout: workout));
+            }
+          } catch (e) {
+            debugPrint('Error saving workout to Firestore on finish session: $e');
+          }
+        }
+      }
     }
 
     activeSession.value = null;

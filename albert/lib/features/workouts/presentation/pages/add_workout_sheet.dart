@@ -324,7 +324,7 @@ class AddWorkoutSheet extends StatelessWidget {
           // Save button
           ElevatedButton(
             onPressed: () {
-              if (controller.saveRoutine()) {
+              if (controller.saveRoutine(context)) {
                 Navigator.of(context).pop();
               }
             },

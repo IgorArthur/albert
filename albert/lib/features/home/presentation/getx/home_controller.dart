@@ -36,7 +36,7 @@ class HomeController extends GetxController {
   }
 
   void openCoach() {
-    // TO-DO: navigate to Coach Albert chat
+    rootNavigatorKey.currentContext?.push(Routes.coachPage);
   }
 
   void onRoutineTap(BuildContext context, Routine routine) {

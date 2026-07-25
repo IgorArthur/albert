@@ -2,6 +2,7 @@ import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:albert/features/utils/hive/files/boxes.dart';
 import 'package:albert/features/utils/utils.dart';
+import 'package:albert/features/workouts/presentation/getx/workouts_controller.dart';
 import 'package:albert/features/profile/domain/models/user_profile.dart';
 import 'package:albert/features/profile/domain/repositories/profile_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -434,6 +435,11 @@ class ProfileController extends GetxController {
       selectedAvatar.value = '💪';
       dateOfBirth.value = null;
       birthdayController.text = '';
+
+      if (Get.isRegistered<WorkoutsController>()) {
+        await boxRoutines.clear();
+        WorkoutsController.to.refreshRoutines();
+      }
     } catch (e) {
       debugPrint('Error during sign out: $e');
     } finally {

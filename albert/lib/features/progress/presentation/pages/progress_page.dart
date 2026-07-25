@@ -1,6 +1,7 @@
 import 'package:albert/features/progress/presentation/getx/progress_controller.dart';
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
+import 'package:albert/features/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -25,8 +26,13 @@ class _ProgressPageState extends State<ProgressPage> {
     final topPadding = MediaQuery.of(context).padding.top;
 
     return Scaffold(
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
+      body: RefreshIndicator(
+        onRefresh: refreshAppData,
+        color: AppColors.primary100,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
         slivers: [
           SliverPadding(
             padding: EdgeInsets.fromLTRB(20.0, topPadding + 24.0, 20.0, 24.0),
@@ -250,7 +256,8 @@ class _ProgressPageState extends State<ProgressPage> {
             ),
           ],
         ),
-      );
+      ),
+    );
   }
 }
 
