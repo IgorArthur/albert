@@ -42,6 +42,10 @@ void main() {
   final List<WorkoutModel> tWorkoutModels = [tWorkoutModel];
   final List<Workout> tWorkouts = tWorkoutModels;
 
+  setUpAll(() {
+    registerFallbackValue(tWorkoutModel);
+  });
+
   group('getWorkouts', () {
     test('should check if the device is online', () async {
       when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
@@ -101,6 +105,98 @@ void main() {
 
         expect(result, equals(Left(CacheFailure())));
       });
+    });
+  });
+
+  group('addWorkout', () {
+    test('should save to local and remote when online', () async {
+      when(() => mockLocal.addWorkout(any())).thenAnswer((_) async => {});
+      when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
+      when(() => mockRemote.addWorkout(any())).thenAnswer((_) async => {});
+
+      final result = await repository.addWorkout(tWorkoutModel);
+
+      verify(() => mockLocal.addWorkout(any()));
+      verify(() => mockRemote.addWorkout(any()));
+      expect(result, equals(const Right(null)));
+    });
+
+    test('should save only to local when offline', () async {
+      when(() => mockLocal.addWorkout(any())).thenAnswer((_) async => {});
+      when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => false);
+
+      final result = await repository.addWorkout(tWorkoutModel);
+
+      verify(() => mockLocal.addWorkout(any()));
+      verifyZeroInteractions(mockRemote);
+      expect(result, equals(const Right(null)));
+    });
+
+    test('should save to local and return Right(null) when remote save fails', () async {
+      when(() => mockLocal.addWorkout(any())).thenAnswer((_) async => {});
+      when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
+      when(() => mockRemote.addWorkout(any())).thenThrow(ServerException());
+
+      final result = await repository.addWorkout(tWorkoutModel);
+
+      verify(() => mockLocal.addWorkout(any()));
+      verify(() => mockRemote.addWorkout(any()));
+      expect(result, equals(const Right(null)));
+    });
+
+    test('should return CacheFailure when local save fails', () async {
+      when(() => mockLocal.addWorkout(any())).thenThrow(CacheException());
+
+      final result = await repository.addWorkout(tWorkoutModel);
+
+      verify(() => mockLocal.addWorkout(any()));
+      expect(result, equals(Left(CacheFailure())));
+    });
+  });
+
+  group('deleteWorkout', () {
+    test('should delete from local and remote when online', () async {
+      when(() => mockLocal.deleteWorkout(any())).thenAnswer((_) async => {});
+      when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
+      when(() => mockRemote.deleteWorkout(any())).thenAnswer((_) async => {});
+
+      final result = await repository.deleteWorkout('1');
+
+      verify(() => mockLocal.deleteWorkout('1'));
+      verify(() => mockRemote.deleteWorkout('1'));
+      expect(result, equals(const Right(null)));
+    });
+
+    test('should delete only from local when offline', () async {
+      when(() => mockLocal.deleteWorkout(any())).thenAnswer((_) async => {});
+      when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => false);
+
+      final result = await repository.deleteWorkout('1');
+
+      verify(() => mockLocal.deleteWorkout('1'));
+      verifyZeroInteractions(mockRemote);
+      expect(result, equals(const Right(null)));
+    });
+
+    test('should delete from local and return Right(null) when remote delete fails', () async {
+      when(() => mockLocal.deleteWorkout(any())).thenAnswer((_) async => {});
+      when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
+      when(() => mockRemote.deleteWorkout(any())).thenThrow(ServerException());
+
+      final result = await repository.deleteWorkout('1');
+
+      verify(() => mockLocal.deleteWorkout('1'));
+      verify(() => mockRemote.deleteWorkout('1'));
+      expect(result, equals(const Right(null)));
+    });
+
+    test('should return CacheFailure when local delete fails', () async {
+      when(() => mockLocal.deleteWorkout(any())).thenThrow(CacheException());
+
+      final result = await repository.deleteWorkout('1');
+
+      verify(() => mockLocal.deleteWorkout('1'));
+      expect(result, equals(Left(CacheFailure())));
     });
   });
 }

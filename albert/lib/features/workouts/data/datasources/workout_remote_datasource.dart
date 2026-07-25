@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../core/error/exceptions.dart';
 import '../models/workout_model.dart';
 
@@ -9,11 +10,20 @@ abstract class WorkoutRemoteDataSource {
 }
 
 class WorkoutRemoteDataSourceImpl implements WorkoutRemoteDataSource {
-  final FirebaseFirestore firestore;
-  WorkoutRemoteDataSourceImpl(this.firestore);
+  final FirebaseFirestore? _firestore;
+  WorkoutRemoteDataSourceImpl([this._firestore]);
 
-  CollectionReference<Map<String, dynamic>> get _collection =>
-      firestore.collection('workouts');
+  FirebaseFirestore get firestore => _firestore ?? FirebaseFirestore.instance;
+
+  String? get _userId => FirebaseAuth.instance.currentUser?.uid;
+
+  CollectionReference<Map<String, dynamic>> get _collection {
+    final uid = _userId;
+    if (uid == null || uid.isEmpty) {
+      return firestore.collection('workouts');
+    }
+    return firestore.collection('users').doc(uid).collection('workouts');
+  }
 
   @override
   Future<List<WorkoutModel>> getWorkouts() async {

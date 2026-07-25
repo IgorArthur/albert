@@ -75,6 +75,8 @@ const Map<String, String> _en = {
   'workouts_validation_sets': 'Sets for "@name" must be greater than 0.',
   'workouts_validation_reps': 'Reps for "@name" must be greater than 0.',
   'workouts_validation_weight': 'Weight for "@name" cannot be negative.',
+  'workouts_remote_save_error_title': 'Saved locally',
+  'workouts_remote_save_error': 'Could not save the info on the Google account, saved only locally.',
   // ── Progress ──────────────────────────────────────────────────────────────
   'progress_overline': 'STATS',
   'progress_title': 'Progress',
@@ -236,6 +238,9 @@ const Map<String, String> _pt = {
   'workouts_validation_reps':
       'As repetições de "@name" devem ser maiores que 0.',
   'workouts_validation_weight': 'O peso de "@name" não pode ser negativo.',
+  'workouts_remote_save_error_title': 'Salvo localmente',
+  'workouts_remote_save_error':
+      'Não foi possível salvar as informações na conta Google, salvo apenas localmente.',
   // ── Progress ──────────────────────────────────────────────────────────────
   'progress_overline': 'ESTATÍSTICAS',
   'progress_title': 'Progresso',

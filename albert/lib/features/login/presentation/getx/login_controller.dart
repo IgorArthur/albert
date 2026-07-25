@@ -3,6 +3,7 @@ import 'package:albert/features/utils/hive/files/boxes.dart';
 import 'package:albert/features/profile/presentation/getx/profile_controller.dart';
 import 'package:albert/features/profile/domain/models/user_profile.dart';
 import 'package:albert/features/profile/domain/repositories/profile_repository.dart';
+import 'package:albert/features/workouts/presentation/getx/workouts_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -46,6 +47,10 @@ class LoginController extends GetxController {
 
         if (Get.isRegistered<ProfileController>()) {
           ProfileController.to.loadUserFromStorage();
+        }
+        if (Get.isRegistered<WorkoutsController>()) {
+          await boxRoutines.clear();
+          WorkoutsController.to.refreshRoutines();
         }
       }
       debugPrint('User logged in with Google: ${user?.displayName}');

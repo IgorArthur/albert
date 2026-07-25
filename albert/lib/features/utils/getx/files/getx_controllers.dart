@@ -12,6 +12,18 @@ import 'package:albert/features/profile/domain/repositories/profile_repository.d
 import 'package:albert/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:albert/features/profile/data/datasources/profile_local_datasource.dart';
 import 'package:albert/features/profile/data/datasources/profile_remote_datasource.dart';
+import 'package:albert/core/network/network_info.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hive/hive.dart';
+import 'package:albert/features/workouts/data/datasources/workout_local_datasource.dart';
+import 'package:albert/features/workouts/data/datasources/workout_remote_datasource.dart';
+import 'package:albert/features/workouts/data/models/workout_model.dart';
+import 'package:albert/features/workouts/data/repositories/workout_repository_impl.dart';
+import 'package:albert/features/workouts/domain/repositories/workout_repository.dart';
+import 'package:albert/features/workouts/domain/usecases/add_workout.dart';
+import 'package:albert/features/workouts/domain/usecases/delete_workout.dart';
+import 'package:albert/features/workouts/domain/usecases/get_workouts.dart';
 import 'package:get/get.dart';
 
 void registerGetxControllers() {
@@ -25,6 +37,22 @@ void registerGetxControllers() {
     ),
     permanent: true,
   );
+
+  // Register Workouts Clean Architecture dependencies & usecases
+  final workoutCacheBox = Hive.box<WorkoutModel>('workoutCacheBox');
+  final workoutLocalSource = WorkoutLocalDataSourceImpl(workoutCacheBox);
+  final workoutRemoteSource = WorkoutRemoteDataSourceImpl();
+  final networkInfo = NetworkInfoImpl(Connectivity());
+  final workoutRepo = WorkoutRepositoryImpl(
+    remote: workoutRemoteSource,
+    local: workoutLocalSource,
+    networkInfo: networkInfo,
+  );
+  Get.put<WorkoutRepository>(workoutRepo, permanent: true);
+
+  Get.put(GetWorkouts(workoutRepo), permanent: true);
+  Get.put(AddWorkout(workoutRepo), permanent: true);
+  Get.put(DeleteWorkout(workoutRepo), permanent: true);
 
   Get.put(NavigationBarController());
   Get.put(WorkoutsController());
