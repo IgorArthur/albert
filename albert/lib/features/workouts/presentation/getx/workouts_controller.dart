@@ -181,6 +181,27 @@ class WorkoutsController extends GetxController {
           .map((e) => Exercise(name: e.name, sets: e.sets, reps: e.reps, kg: e.kg))
           .toList(),
     );
+    _resetBisetState();
+    for (var i = 0; i < routine.exercises.length; i++) {
+      final primary = routine.exercises[i].bisetWith;
+      if (primary != null && primary >= 0 && primary < routine.exercises.length) {
+        bisetLinks[i] = primary;
+      }
+    }
+  }
+
+  /// Copies the draft exercises, applying the current biset links.
+  List<Exercise> _draftExercisesWithBisets() {
+    return [
+      for (var i = 0; i < newRoutineExercises.length; i++)
+        Exercise(
+          name: newRoutineExercises[i].name,
+          sets: newRoutineExercises[i].sets,
+          reps: newRoutineExercises[i].reps,
+          kg: newRoutineExercises[i].kg,
+          bisetWith: bisetLinks[i],
+        ),
+    ];
   }
 
   void addExerciseToDraft() {
@@ -258,7 +279,7 @@ class WorkoutsController extends GetxController {
         name: name,
         icon: newRoutineIcon.value,
         createdAt: DateTime.now(),
-        exercises: List<Exercise>.from(newRoutineExercises),
+        exercises: _draftExercisesWithBisets(),
       );
       addRoutine(newRoutine);
     }
@@ -274,7 +295,7 @@ class WorkoutsController extends GetxController {
       name: name,
       icon: newRoutineIcon.value,
       createdAt: routines[index].createdAt,
-      exercises: List<Exercise>.from(newRoutineExercises),
+      exercises: _draftExercisesWithBisets(),
     );
 
     boxRoutines.put(id, updated);
@@ -372,16 +393,14 @@ class WorkoutsController extends GetxController {
       final col = _routinesCollection;
       final snapshot = await col.get();
       if (snapshot.docs.isNotEmpty) {
-        await boxRoutines.clear();
-        final List<Routine> remoteRoutines = [];
         for (final doc in snapshot.docs) {
           final r = _routineFromJson(doc.data());
-          remoteRoutines.add(r);
           await boxRoutines.put(r.id, r);
         }
-        remoteRoutines.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-        routines.assignAll(remoteRoutines);
-        debugPrint('Successfully hydrated ${remoteRoutines.length} routines from Firestore');
+        final allRoutines = boxRoutines.values.toList().cast<Routine>();
+        allRoutines.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+        routines.assignAll(allRoutines);
+        debugPrint('Successfully loaded ${allRoutines.length} routines from storage');
       }
     } catch (e) {
       debugPrint('Error loading routines from Firestore: $e');
@@ -396,6 +415,7 @@ Map<String, dynamic> _exerciseToJson(Exercise e) => {
       'sets': e.sets,
       'reps': e.reps,
       'kg': e.kg,
+      if (e.bisetWith != null) 'bisetWith': e.bisetWith,
     };
 
 Exercise _exerciseFromJson(Map<String, dynamic> json) => Exercise(
@@ -403,6 +423,7 @@ Exercise _exerciseFromJson(Map<String, dynamic> json) => Exercise(
       sets: json['sets'] as int? ?? 0,
       reps: json['reps'] as int? ?? 0,
       kg: (json['kg'] as num?)?.toDouble() ?? 0.0,
+      bisetWith: (json['bisetWith'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _routineToJson(Routine r) => {

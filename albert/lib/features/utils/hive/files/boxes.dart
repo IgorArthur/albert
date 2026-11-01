@@ -4,3 +4,4 @@ late Box boxExercises;
 late Box boxRoutines;
 late Box boxWorkoutSessions;
 late Box boxAuth;
+late Box boxActiveSession;

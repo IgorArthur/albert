@@ -158,20 +158,20 @@ class AddWorkoutSheet extends StatelessWidget {
                                       ? Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
-                                          children: const [
+                                          children: [
                                             Text(
-                                              'Pick the pair',
-                                              style: TextStyle(
+                                              'biset_pick_title'.tr,
+                                              style: const TextStyle(
                                                 fontFamily: 'Montserrat',
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.bold,
                                                 color: AppColors.primary100,
                                               ),
                                             ),
-                                            SizedBox(height: 2),
+                                            const SizedBox(height: 2),
                                             Text(
-                                              'Tap any dashed exercise below to link it as a biset.',
-                                              style: TextStyle(
+                                              'biset_pick_body'.tr,
+                                              style: const TextStyle(
                                                 fontFamily: 'Montserrat',
                                                 fontSize: 10,
                                                 color: AppColors.neutral60,
@@ -179,9 +179,9 @@ class AddWorkoutSheet extends StatelessWidget {
                                             ),
                                           ],
                                         )
-                                      : const Text(
-                                          'Tap the link icon on a card to pair exercises as a biset.',
-                                          style: TextStyle(
+                                      : Text(
+                                          'biset_hint'.tr,
+                                          style: const TextStyle(
                                             fontFamily: 'Montserrat',
                                             fontSize: 11,
                                             color: AppColors.neutral60,
@@ -193,9 +193,9 @@ class AddWorkoutSheet extends StatelessWidget {
                                     const SizedBox(width: 10),
                                     GestureDetector(
                                       onTap: controller.cancelBisetPicking,
-                                      child: const Text(
-                                        'Cancel',
-                                        style: TextStyle(
+                                      child: Text(
+                                        'biset_cancel'.tr,
+                                        style: const TextStyle(
                                           fontFamily: 'Montserrat',
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
