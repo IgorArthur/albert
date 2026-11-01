@@ -1,4 +1,5 @@
 import 'package:albert/features/progress/presentation/getx/progress_controller.dart';
+import 'package:albert/features/progress/presentation/widgets/month_range_picker_dialog.dart';
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:albert/features/utils/utils.dart';
@@ -177,15 +178,6 @@ class _ProgressPageState extends State<ProgressPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-
-                  // Full-width Total Volume card below the 4 grid cards
-                  Obx(() => _StatCard(
-                    icon: Icons.emoji_events_outlined,
-                    value: controller.formattedTotalVolume,
-                    label: 'progress_volume_label'.tr,
-                    isFullWidth: true,
-                  )),
                   const SizedBox(height: 24),
 
                   // Last 14 days dynamic chart container
@@ -438,7 +430,7 @@ class _ProgressPageState extends State<ProgressPage> {
                             isSelected: controller.selectedFilter.value ==
                                 SessionFilterOption.custom,
                             onTap: () async {
-                              final picked = await showDateRangePicker(
+                              final picked = await showMonthRangePicker(
                                 context: context,
                                 firstDate: DateTime(2020),
                                 lastDate: DateTime.now(),
@@ -449,26 +441,6 @@ class _ProgressPageState extends State<ProgressPage> {
                                           const Duration(days: 7)),
                                       end: DateTime.now(),
                                     ),
-                                builder: (context, child) {
-                                  return Theme(
-                                    data: Theme.of(context).copyWith(
-                                      colorScheme: Theme.of(context)
-                                                  .brightness ==
-                                              Brightness.dark
-                                          ? const ColorScheme.dark(
-                                              primary: AppColors.primary100,
-                                              onPrimary: Colors.black,
-                                              surface: AppColors.surfaceCard,
-                                              onSurface: Colors.white,
-                                            )
-                                          : const ColorScheme.light(
-                                              primary: AppColors.primary100,
-                                              onPrimary: Colors.white,
-                                            ),
-                                    ),
-                                    child: child!,
-                                  );
-                                },
                               );
                               if (picked != null) {
                                 controller.setCustomFilter(picked);
@@ -638,10 +610,8 @@ class _SessionCard extends StatelessWidget {
 
     // Calculate session stats
     int sets = 0;
-    double volume = 0;
     for (final ex in session.exercises) {
       sets += ex.sets;
-      volume += (ex.sets * ex.reps * ex.kg);
     }
 
     // Duration formatting
@@ -671,18 +641,6 @@ class _SessionCard extends StatelessWidget {
         '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
     final timeStr =
         '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
-
-    // Volume formatting
-    final volInt = volume.toInt();
-    final strVol = volInt.toString();
-    final buffer = StringBuffer();
-    for (int i = 0; i < strVol.length; i++) {
-      if (i > 0 && (strVol.length - i) % 3 == 0) {
-        buffer.write(',');
-      }
-      buffer.write(strVol[i]);
-    }
-    final volumeFormatted = '$buffer kg';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -782,12 +740,6 @@ class _SessionCard extends StatelessWidget {
                 icon: Icons.format_list_bulleted_rounded,
                 value: '$sets',
                 label: 'Sets',
-              ),
-              // Volume
-              _SessionStatItem(
-                icon: Icons.scale_rounded,
-                value: volumeFormatted,
-                label: 'Volume',
               ),
               // Time
               _SessionStatItem(

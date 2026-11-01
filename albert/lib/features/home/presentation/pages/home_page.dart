@@ -6,6 +6,7 @@ import 'package:albert/features/home/presentation/widgets/start_workout_card.dar
 import 'package:albert/features/utils/colors/app_colors.dart';
 import 'package:albert/features/utils/fonts/app_fonts.dart';
 import 'package:albert/features/utils/utils.dart';
+import 'package:albert/features/workouts/presentation/getx/session_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,6 +17,10 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = HomeController.to;
     final topPadding = MediaQuery.of(context).padding.top;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.mounted) SessionController.to.promptRestoreIfNeeded(context);
+    });
 
     return Scaffold(
       body: RefreshIndicator(

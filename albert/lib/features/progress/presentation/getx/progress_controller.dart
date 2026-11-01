@@ -57,6 +57,9 @@ class ProgressController extends GetxController {
   final RxList<DailyProgress> last14DaysData = <DailyProgress>[].obs;
   final RxList<WorkoutSession> sessionsList = <WorkoutSession>[].obs;
 
+  /// All sessions fetched from Firestore (unfiltered), used for global stats.
+  List<WorkoutSession> _remoteAllSessions = [];
+
   final Rx<SessionFilterOption> selectedFilter =
       SessionFilterOption.last7Days.obs;
   final Rx<DateTimeRange?> customDateRange = Rx<DateTimeRange?>(null);
@@ -179,10 +182,12 @@ class ProgressController extends GetxController {
             .get(const GetOptions(source: Source.server));
 
         final List<WorkoutSession> remoteSessions = [];
+        final List<WorkoutSession> allRemote = [];
 
         for (final doc in snapshot.docs) {
           final data = doc.data();
-          final session = _sessionFromMap(data);
+          final session = _sessionFromMap(data, fallbackId: doc.id);
+          allRemote.add(session);
           if (session.startedAt.isAfter(startDate.subtract(const Duration(seconds: 1))) &&
               session.startedAt.isBefore(endDate.add(const Duration(seconds: 1)))) {
             remoteSessions.add(session);
@@ -193,6 +198,8 @@ class ProgressController extends GetxController {
             .compareTo(a.finishedAt ?? a.startedAt));
 
         sessionsList.assignAll(remoteSessions);
+        _remoteAllSessions = allRemote;
+        _calculateStats();
         debugPrint(
             'Fetched ${remoteSessions.length} sessions from Firestore server query for filter ${selectedFilter.value}');
       } else {
@@ -221,7 +228,7 @@ class ProgressController extends GetxController {
     sessionsList.assignAll(localSessions);
   }
 
-  WorkoutSession _sessionFromMap(Map<String, dynamic> data) {
+  WorkoutSession _sessionFromMap(Map<String, dynamic> data, {String? fallbackId}) {
     final exercisesData = data['exercises'] as List<dynamic>? ?? [];
     final exercises = exercisesData.map((e) {
       final map = e as Map<String, dynamic>;
@@ -230,6 +237,7 @@ class ProgressController extends GetxController {
         sets: (map['sets'] as num? ?? 0).toInt(),
         reps: (map['reps'] as num? ?? 0).toInt(),
         kg: (map['kg'] as num? ?? 0).toDouble(),
+        bisetWith: (map['bisetWith'] as num?)?.toInt(),
       );
     }).toList();
 
@@ -241,6 +249,7 @@ class ProgressController extends GetxController {
 
     return WorkoutSession(
       id: data['id'] as String? ??
+          fallbackId ??
           DateTime.now().millisecondsSinceEpoch.toString(),
       routineId: data['routineId'] as String? ?? '',
       routineName: data['routineName'] as String? ?? '',
@@ -251,18 +260,17 @@ class ProgressController extends GetxController {
   }
 
   void _calculateStats() {
-    final allSessions = boxWorkoutSessions.values
-        .whereType<WorkoutSession>()
-        .toList();
+    // Merge remote (Firestore) and local (Hive) sessions, deduplicated by id.
+    final Map<String, WorkoutSession> merged = {
+      for (final s in _remoteAllSessions) s.id: s,
+    };
+    for (final s in boxWorkoutSessions.values.whereType<WorkoutSession>()) {
+      merged[s.id] = s; // local copy wins (most up to date on this device)
+    }
 
-    final finishedSessions = allSessions
+    final finishedSessions = merged.values
         .where((s) => s.finishedAt != null)
         .toList();
-
-    allSessions.sort((a, b) => (b.finishedAt ?? b.startedAt)
-        .compareTo(a.finishedAt ?? a.startedAt)); // newest first
-
-    sessionsList.assignAll(allSessions);
 
     finishedSessions.sort((a, b) => b.finishedAt!.compareTo(a.finishedAt!)); // newest first
 
@@ -272,12 +280,8 @@ class ProgressController extends GetxController {
     double volume = 0;
     int seconds = 0;
 
-    for (final session in allSessions) {
-      if (session.finishedAt != null) {
-        seconds += session.finishedAt!.difference(session.startedAt).inSeconds;
-      } else {
-        seconds += DateTime.now().difference(session.startedAt).inSeconds;
-      }
+    for (final session in finishedSessions) {
+      seconds += session.finishedAt!.difference(session.startedAt).inSeconds;
       for (final ex in session.exercises) {
         sets += ex.sets;
         volume += (ex.sets * ex.reps * ex.kg);
